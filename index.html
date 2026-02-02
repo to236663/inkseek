@@ -1,45 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Inkseek!</title>
-    <style>
-        #navbar {
-            display: flex;
-            background-color: beige;
-        }
-        #bottle-logo {
-            border-style: solid;
-            border-width: 3px;
-        }
-        #center-buttons {
-            text-align: center;
-            position: relative;
-            left: 100px;
-        }
-        #right-buttons {
-            text-align: center;
-            position: relative;
-            left: 500px;
-        }
-        #navbutton, #login {
-            text-align: center;
-            text-decoration: none;
-            color: black;
-            padding: 14px 20px;
-            
-        }
-    </style>
+    <title>Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/grid.css">
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <div id="navbar">
-        <img id="bottle-logo" src="#" alt="ink bottle dripping">
+        <a id="logo-link" href="index.html">
+            <img id="bottle-logo" src="images/logos/inkseeklogomain.png" alt="ink bottle dripping">
+        </a>
         <div id="center-buttons">
-            <a id="navbutton" href="#">Discover</a>
-            <a id="navbutton" href="#">About Us</a>
-            <a id="navbutton" href="#">Guides</a>
+            <div id="center-buttons-group">
+                <a id="navbutton" href="discover.html">Discover</a>
+                <a id="navbutton" href="#">About Us</a>
+                <a id="navbutton" href="#">Guides</a>
+            </div>
         </div>
         <div id="right-buttons">
             <a id="login" href="#">Log In</a>
@@ -102,4 +84,5 @@
         </ul>
     </footer>
 </body>
+
 </html>
