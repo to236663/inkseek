@@ -5,31 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inkseek</title>
-    <style>
-        #grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 43px;
-            padding: 10px;
-            margin: auto 85px
-        }
-
-        #grid-item {
-            width: 100%;
-            height: auto;
-            justify-items: center;
-        }
-
-        img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/grid.css">
 </head>
 
 <body>
+    <div id="navbar">
+        <a id="logo-link" href="index.html">
+            <img id="bottle-logo" src="images/logos/inkseeklogomain.png" alt="ink bottle dripping">
+        </a>
+        <div id="center-buttons">
+            <div id="center-buttons-group">
+                <a id="navbutton" href="discover.html">Discover</a>
+                <a id="navbutton" href="#">About Us</a>
+                <a id="navbutton" href="#">Guides</a>
+            </div>
+        </div>
+        <div id="right-buttons">
+            <a id="login" href="#">Log In</a>
+            <a id="login" href="#">Create Account</a>
+        </div>
+    </div>
+    <header>
+        <h1>Discover your next look</h1>
+    </header>
     <div id="grid-container">
         <div id="grid-item">
             <img src="images/tattoos/styles/Blackwork/Blackwork_1.jpg" alt="Image 1">
