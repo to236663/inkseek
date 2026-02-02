@@ -1,0 +1,61 @@
+ @import url('https://fonts.googleapis.com/css2?family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
+
+ body {
+     background-color: #F2F1ED;
+     font-family: Zain, sans-serif;
+     margin: 0;
+     padding: 0;
+ }
+
+ h1 {
+     font-family: "BBH Hegarty", sans-serif;
+     background-color: #4FBA7F;
+     text-align: center;
+     padding: 20px;
+     font-size: 36px;
+     margin: 0;
+ }
+
+ #navbar {
+     display: flex;
+ }
+
+ #bottle-logo {
+     width: 200px;
+     height: auto;
+     flex-shrink: 0;
+
+ }
+
+ #logo-link {
+     display: inline-block;
+     cursor: pointer;
+ }
+
+ #center-buttons {
+     margin: auto;
+ }
+
+ #center-buttons-group {
+     display: flex;
+     justify-content: center;
+     position: absolute;
+     left: 50%;
+     transform: translateX(-50%);
+     width: 100%;
+ }
+
+ #right-buttons {
+     align-content: center;
+     flex-shrink: 0;
+ }
+
+ #navbutton,
+ #login {
+     text-align: center;
+     text-decoration: none;
+     color: black;
+     padding: 14px 20px;
+
+ }
