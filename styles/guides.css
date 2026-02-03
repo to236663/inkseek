@@ -1,0 +1,47 @@
+#guides-header {
+    background-color: #4FBA7F;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+#guides-subtext {
+    font-size: 18px;
+    margin: 10px 0 0;
+    color: #333;
+}
+
+.guide-item {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.guide-item:hover {
+    transform: translateY(-5px);
+}
+
+.guide-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.guide-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.guide-title {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    margin: 0;
+    padding: 5px 0;
+}
