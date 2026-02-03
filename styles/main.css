@@ -16,6 +16,14 @@
      padding: 20px;
      font-size: 36px;
      margin: 0;
+     font-weight: normal;
+ }
+
+ h2 {
+     font-family: "BBH Hegarty", sans-serif;
+     text-align: center;
+     font-size: 24px;
+     font-weight: normal;
  }
 
  a {
@@ -25,6 +33,7 @@
  /* navigation bar */
  #navbar {
      display: flex;
+     background-color: #F2F1ED;
      margin: auto 20px;
  }
 
@@ -83,6 +92,23 @@
  #create-account {
      background-color: #C1272D;
      color: white;
+ }
+
+ /* content section */
+
+ #section-1 {
+     text-align: center;
+     padding: 50px;
+     color: rgb(68, 68, 68);
+     background-color: #FFC857;
+     border-radius: 100%;
+     width: 400px;
+     height: 400px;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     margin: 25px auto;
  }
 
  /* foooter */
