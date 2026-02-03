@@ -1,0 +1,12 @@
+#about-us-section {
+    background-color: #4FBA7F;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 115px;
+    width: auto;
+    max-width: 735px;
+    margin: 0 350px;
+}
