@@ -2,11 +2,25 @@
  @import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
 
  /* main style */
+ html {
+     overflow-y: scroll;
+ }
+
  body {
      background-color: #F2F1ED;
      font-family: Zain, sans-serif;
      margin: 0;
      padding: 0;
+     opacity: 0;
+     transition: opacity 0.2s ease-in;
+ }
+
+ body.loading {
+     opacity: 0;
+ }
+
+ body.loaded {
+     opacity: 1;
  }
 
  h1 {
@@ -34,14 +48,16 @@
  #navbar {
      display: flex;
      background-color: #F2F1ED;
-     margin: auto 20px;
+     margin: 0 20px;
+     padding: 10px 0;
+     align-items: center;
+     position: relative;
  }
 
  #bottle-logo {
      width: 200px;
      height: auto;
      flex-shrink: 0;
-
  }
 
  #logo-link {
@@ -50,7 +66,9 @@
  }
 
  #center-buttons {
-     margin: auto;
+     position: absolute;
+     left: 50%;
+     transform: translateX(-50%);
  }
 
  #center-buttons-group {
@@ -60,15 +78,18 @@
      justify-content: center;
      align-items: center;
      gap: 10px;
+     padding: 5px;
  }
 
  #right-buttons {
      display: flex;
      gap: 10px;
      align-items: center;
+     margin-left: auto;
  }
 
- #right-buttons-group {
+ #right-buttons-group,
+ .right-buttons-group {
      display: flex;
      border-radius: 10px;
      justify-content: center;
@@ -92,6 +113,144 @@
  #create-account {
      background-color: #C1272D;
      color: white;
+ }
+
+ /* Profile dropdown in navbar */
+ #logged-in-profile {
+     display: none;
+     align-items: center;
+     gap: 10px;
+ }
+
+ .profile-container {
+     position: relative;
+ }
+
+ .profile-dropdown {
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     gap: 8px;
+     cursor: pointer;
+     position: relative;
+     width: fit-content;
+ }
+
+ #profile-link {
+     display: inline-block;
+ }
+
+ .nav-profile-pic {
+     width: 55px;
+     height: 55px;
+     border-radius: 50%;
+     object-fit: cover;
+     border: 2px solid #4FBA7F;
+     transition: border-color 0.3s ease;
+ }
+
+ .nav-profile-pic:hover {
+     border-color: #C1272D;
+ }
+
+ .dropdown-arrow {
+     width: 15px;
+     height: 15px;
+     border-right: 2px solid #333;
+     border-bottom: 2px solid #333;
+     transform: rotate(45deg);
+     margin-top: -5px;
+     cursor: pointer;
+ }
+
+ /* Dropdown Menu */
+ .dropdown-menu {
+     display: none;
+     position: absolute;
+     top: 70px;
+     right: 0;
+     background-color: #F2F1ED;
+     border: 3px solid #FFC857;
+     border-radius: 15px;
+     padding: 15px;
+     min-width: 220px;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+     z-index: 1000;
+ }
+
+ .dropdown-menu.show {
+     display: block;
+ }
+
+ .dropdown-header {
+     padding-bottom: 10px;
+     border-bottom: 1px solid #D7D7D7;
+     margin-bottom: 10px;
+ }
+
+ .dropdown-username {
+     font-family: "BBH Hegarty", sans-serif;
+     font-size: 16px;
+     margin: 0 0 3px 0;
+     font-weight: normal;
+ }
+
+ .dropdown-account-type {
+     font-family: "Zain", sans-serif;
+     font-size: 12px;
+     color: #666;
+     margin: 0;
+ }
+
+ .convert-btn {
+     font-family: "Zain", sans-serif;
+     font-size: 13px;
+     background-color: #D7D7D7;
+     color: #000;
+     border: none;
+     border-radius: 5px;
+     padding: 8px 12px;
+     width: 100%;
+     cursor: pointer;
+     margin-bottom: 10px;
+     transition: background-color 0.3s ease;
+ }
+
+ .convert-btn:hover {
+     background-color: #C0C0C0;
+ }
+
+ .dropdown-item {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     padding: 10px 8px;
+     text-decoration: none;
+     color: #000;
+     font-family: "Zain", sans-serif;
+     font-size: 14px;
+     border-radius: 5px;
+     transition: background-color 0.2s ease;
+ }
+
+ .dropdown-item:hover {
+     background-color: #E8E6E0;
+ }
+
+ .dropdown-icon {
+     font-size: 16px;
+ }
+
+ .dropdown-icon-img {
+     width: 18px;
+     height: 18px;
+     object-fit: contain;
+ }
+
+ .dropdown-divider {
+     height: 1px;
+     background-color: #D7D7D7;
+     margin: 8px 0;
  }
 
  /* content section */

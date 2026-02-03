@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/login.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Login Form Section -->
+    <div id="login-container">
+        <div id="login-box">
+            <div id="login-header">
+                <h1>LOG IN</h1>
+            </div>
+            <form id="login-form" action="user-profile.html" method="get">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username">
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password">
+
+                <a href="user-profile.html"><button type="button" id="login-button" onclick="setLoginState('user')">Log
+                        In</button></a>
+            </form>
+
+            <div id="signup-links">
+                <p>Don't Have an account?</p>
+                <a href="create-account.html" class="signup-link">Personal users click here to Create One</a>
+                <a href="create-account-artist.html" class="signup-link">Artists click here to Create One</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

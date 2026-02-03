@@ -1,0 +1,182 @@
+#profile-container {
+    display: flex;
+    gap: 90px;
+    padding: 30px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+/* Left Profile Sidebar */
+#profile-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background-color: #4FBA7F;
+    padding: 30px 25px;
+    border-radius: 10px;
+}
+
+#profile-info {
+    padding: 0;
+    text-align: center;
+}
+
+#username {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 28px;
+    margin: 0 0 5px 0;
+    color: #000;
+    font-weight: normal;
+}
+
+#realname {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+#stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.stat-number {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 24px;
+    font-weight: normal;
+    color: #000;
+}
+
+.stat-label {
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+#profile-picture {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin: 0 0 25px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+#profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#profile-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.profile-btn {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+}
+
+#edit-profile-btn {
+    background-color: #C1272D;
+    color: white;
+}
+
+#messages-btn {
+    background-color: #D7D7D7;
+    color: #000;
+}
+
+/* About Section */
+#about-section {
+    margin-top: 20px;
+    position: relative;
+}
+
+#about-header {
+    background-color: #DCD9D0;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+#about-header h3 {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 20px;
+    margin: 0;
+    font-weight: normal;
+}
+
+#about-content {
+    background-color: #E8E6E0;
+    padding: 30px 20px 20px;
+    border-radius: 0 0 10px 10px;
+    margin-top: -10px;
+    position: relative;
+    z-index: 1;
+}
+
+#about-content p {
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: #333;
+}
+
+/* Right Bookmarks Section */
+#bookmarks-section {
+    flex: 1;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+#bookmarks-title {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 24px;
+    margin: 0 0 20px 0;
+    font-weight: normal;
+    text-align: center;
+    background-color: #4FBA7F;
+    padding: 15px 30px;
+    border-radius: 10px;
+}
+
+#bookmarks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.bookmark-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bookmark-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

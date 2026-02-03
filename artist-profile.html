@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Profile - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/artist-profile.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Artist Profile Content -->
+    <div id="artist-profile-container">
+        <!-- Left Profile Column -->
+        <div id="artist-sidebar">
+            <div id="artist-info">
+                <h2 id="artist-name">Artist Name</h2>
+                <div id="rating">
+                    <div id="stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                    <p id="review-count">128 reviews</p>
+                </div>
+
+                <div id="artist-layout">
+                    <div id="artist-picture">
+                        <img src="images/profile photos/Artist/Profile_1.jpg" alt="Artist Profile Picture">
+                    </div>
+
+                    <div id="artist-details">
+                        <div class="detail-item">
+                            <h4>Location</h4>
+                            <p><span class="tag">Winter Park, FL</span></p>
+                        </div>
+                        <div class="detail-item rates-group">
+                            <h4>Hourly Rate</h4>
+                            <p><span class="tag">$150</span></p>
+                            <h4>Minimum</h4>
+                            <p><span class="tag">$150</span></p>
+                            <h4>Day Rate</h4>
+                            <p><span class="tag">$1000</span></p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Style</h4>
+                            <p><span class="tag">Realism</span><br><span class="tag">Anime</span><br><span
+                                    class="tag">Traditional</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="action-buttons">
+                    <button class="action-btn" id="follow-btn">Follow</button>
+                    <button class="action-btn" id="message-btn">Message</button>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="info-section">
+                <div class="section-header">
+                    <h3>About</h3>
+                </div>
+                <div class="section-content">
+                    <p>Professional tattoo artist specializing in realism, anime, and traditional styles. With over 10
+                        years of experience, I bring your vision to life with precision and creativity.</p>
+                </div>
+            </div>
+
+            <!-- Weekly Availability Section -->
+            <div class="info-section">
+                <div class="section-header">
+                    <h3>Weekly Availability</h3>
+                </div>
+                <div class="section-content">
+                    <p>Monday - Friday: 10am - 6pm<br>
+                        Saturday: 12pm - 8pm<br>
+                        Sunday: Closed</p>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="info-section">
+                <div class="section-header">
+                    <h3>Location</h3>
+                </div>
+                <div class="section-content">
+                    <div id="map-placeholder">
+                        <p>Map Placeholder</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="info-section">
+                <div class="section-header">
+                    <h3>Reviews</h3>
+                </div>
+                <div class="section-content">
+                    <button id="review-artist-btn">Review Artist</button>
+                    <div id="reviews-list">
+                        <p>Recent reviews will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Portfolio Section -->
+        <div id="portfolio-section">
+            <h2 id="portfolio-title">Portfolio</h2>
+            <div id="portfolio-grid">
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/realism/real_1.jpg" alt="Portfolio 1">
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/Anime/Anime_girl.jpg" alt="Portfolio 2">
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/Traditional/trad_1.jpg" alt="Portfolio 3">
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/realism/real_2.jpg" alt="Portfolio 4">
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/Anime/Anime_sword.jpg" alt="Portfolio 5">
+                </div>
+                <div class="portfolio-item">
+                    <img src="images/tattoos/styles/Traditional/trad_2.jpg" alt="Portfolio 6">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+#artist-profile-container {
+    display: flex;
+    gap: 90px;
+    padding: 30px 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+/* Left Artist Sidebar */
+#artist-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background-color: #4FBA7F;
+    padding: 30px 25px;
+    border-radius: 10px;
+}
+
+#artist-info {
+    padding: 0;
+    text-align: center;
+}
+
+#artist-name {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 28px;
+    margin: 0 0 10px 0;
+    color: #000;
+    font-weight: normal;
+}
+
+/* Star Rating */
+#rating {
+    margin-bottom: 20px;
+}
+
+#stars {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.star {
+    font-size: 24px;
+    color: #FFD700;
+}
+
+.star.empty {
+    color: #D7D7D7;
+}
+
+#review-count {
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    margin: 0;
+    color: #333;
+}
+
+/* Artist Layout - Picture and Details Stacked Vertically */
+#artist-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#artist-picture {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#artist-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Artist Details with White Background */
+#artist-details {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: left;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.detail-item {
+    margin-bottom: 0;
+}
+
+.rates-group {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+}
+
+.rates-group h4:not(:first-child) {
+    margin-top: 6px;
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.detail-item h4 {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 13px;
+    margin: 0 0 3px 0;
+    color: #000;
+    font-weight: normal;
+}
+
+.detail-item p {
+    font-family: "Zain", sans-serif;
+    font-size: 11px;
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+}
+
+.tag {
+    background-color: #4FBA7F;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 1px 0;
+}
+
+/* Action Buttons */
+#action-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.action-btn {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+}
+
+#follow-btn {
+    background-color: #C1272D;
+    color: white;
+}
+
+#follow-btn:hover {
+    background-color: #A01F23;
+}
+
+#message-btn {
+    background-color: #D7D7D7;
+    color: #000;
+}
+
+#message-btn:hover {
+    background-color: #C0C0C0;
+}
+
+/* Info Sections (About, Availability, Location, Reviews) */
+.info-section {
+    margin-top: 20px;
+    position: relative;
+}
+
+.section-header {
+    background-color: #DCD9D0;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.section-header h3 {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 20px;
+    margin: 0;
+    font-weight: normal;
+}
+
+.section-content {
+    background-color: #E8E6E0;
+    padding: 30px 20px 20px;
+    border-radius: 0 0 10px 10px;
+    margin-top: -10px;
+    position: relative;
+    z-index: 1;
+}
+
+.section-content p {
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: #333;
+}
+
+/* Map Placeholder */
+#map-placeholder {
+    background-color: #D7D7D7;
+    border-radius: 8px;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+#map-placeholder p {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+/* Review Artist Button */
+#review-artist-btn {
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    background-color: #4FBA7F;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+}
+
+#review-artist-btn:hover {
+    background-color: #45A570;
+}
+
+#reviews-list {
+    margin-top: 15px;
+}
+
+#reviews-list p {
+    font-family: "Zain", sans-serif;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Right Portfolio Section */
+#portfolio-section {
+    flex: 1;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+#portfolio-title {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 24px;
+    margin: 0 0 20px 0;
+    font-weight: normal;
+    text-align: center;
+    background-color: #4FBA7F;
+    padding: 15px 30px;
+    border-radius: 10px;
+}
+
+#portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.portfolio-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.portfolio-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

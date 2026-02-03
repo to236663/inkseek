@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/user-profile.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Profile Content -->
+    <div id="profile-container">
+        <!-- Left Profile Column -->
+        <div id="profile-sidebar">
+            <div id="profile-info">
+                <h2 id="username">@username</h2>
+                <p id="realname">John Doe</p>
+
+                <div id="stats">
+                    <div class="stat">
+                        <span class="stat-number">128</span>
+                        <span class="stat-label">Following</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">456</span>
+                        <span class="stat-label">Followers</span>
+                    </div>
+                </div>
+
+                <div id="profile-picture">
+                    <img src="images/profile photos/User/UP_4.jpg" alt="Profile Picture">
+                </div>
+
+                <div id="profile-buttons">
+                    <button class="profile-btn" id="edit-profile-btn">Edit Profile</button>
+                    <button class="profile-btn" id="messages-btn">Messages</button>
+                </div>
+            </div>
+
+            <div id="about-section">
+                <div id="about-header">
+                    <h3>About</h3>
+                </div>
+                <div id="about-content">
+                    <p>Tattoo enthusiast exploring different styles and connecting with talented artists. Always looking
+                        for inspiration for my next piece.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Bookmarked Images Grid -->
+        <div id="bookmarks-section">
+            <h2 id="bookmarks-title">Bookmarked</h2>
+            <div id="bookmarks-grid">
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/Blackwork/Blackwork_1.jpg" alt="Saved Tattoo 1">
+                </div>
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/realism/real_1.jpg" alt="Saved Tattoo 2">
+                </div>
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Saved Tattoo 3">
+                </div>
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/Watercolor/watercolor_1.jpg" alt="Saved Tattoo 4">
+                </div>
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/Traditional/trad_1.jpg" alt="Saved Tattoo 5">
+                </div>
+                <div class="bookmark-item">
+                    <img src="images/tattoos/styles/Geometric/geo_1.jpg" alt="Saved Tattoo 6">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>
