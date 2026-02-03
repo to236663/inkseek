@@ -1,6 +1,7 @@
  @import url('https://fonts.googleapis.com/css2?family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
  @import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap');
 
+ /* main style */
  body {
      background-color: #F2F1ED;
      font-family: Zain, sans-serif;
@@ -17,8 +18,14 @@
      margin: 0;
  }
 
+ a {
+     color: black
+ }
+
+ /* navigation bar */
  #navbar {
      display: flex;
+     margin: auto 20px;
  }
 
  #bottle-logo {
@@ -39,23 +46,57 @@
 
  #center-buttons-group {
      display: flex;
+     background-color: #FFC857;
+     border-radius: 10px;
      justify-content: center;
-     position: absolute;
-     left: 50%;
-     transform: translateX(-50%);
-     width: 100%;
+     align-items: center;
+     gap: 10px;
  }
 
  #right-buttons {
-     align-content: center;
-     flex-shrink: 0;
+     display: flex;
+     gap: 10px;
+     align-items: center;
  }
 
- #navbutton,
- #login {
-     text-align: center;
+ #right-buttons-group {
+     display: flex;
+     border-radius: 10px;
+     justify-content: center;
+     align-items: center;
+     gap: 10px;
+ }
+
+ .navbutton {
      text-decoration: none;
      color: black;
-     padding: 14px 20px;
+     padding: 8px 20px;
+     border-radius: 10px;
+     align-items: center;
+     justify-content: center;
+ }
 
+ #login {
+     background-color: #D7D7D7;
+ }
+
+ #create-account {
+     background-color: #C1272D;
+     color: white;
+ }
+
+ /* foooter */
+ footer {
+     background-color: #4FBA7F;
+     color: black;
+     padding: 20px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+
+ #simple-logo {
+     width: 25px;
+     height: auto;
+     margin-right: 50px;
  }
