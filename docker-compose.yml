@@ -1,9 +1,9 @@
 version: "3.8"
 services:
   web:
-    build: .
+    build: ./inkseek
     ports:
       - "8080:80"
     volumes:
-      - ./:/usr/share/nginx/html:ro
+      - ./inkseek:/usr/share/nginx/html:ro
     restart: unless-stopped
