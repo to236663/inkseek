@@ -21,9 +21,11 @@
         <!-- Left Profile Column -->
         <div id="artist-sidebar">
             <div id="artist-info">
-                <h2 id="artist-name">Artist Name</h2>
+                <h2 id="artist-name">@SilverSpire_Ink</h2>
+                <p style="font-family: 'Zain', sans-serif; font-size: 16px; margin: 5px 0 0 0; color: #666;">Naomi Sinclair</p>
                 <div id="rating">
                     <div id="stars">
+                        <span class="rating-number">4.0</span>
                         <span class="star">★</span>
                         <span class="star">★</span>
                         <span class="star">★</span>
@@ -53,15 +55,18 @@
                         </div>
                         <div class="detail-item">
                             <h4>Style</h4>
-                            <p><span class="tag">Realism</span><br><span class="tag">Anime</span><br><span
-                                    class="tag">Traditional</span></p>
+                            <p><span class="tag">Japanese</span><br><span class="tag">Anime</span><br><span
+                                    class="tag">Illustrative</span></p>
                         </div>
                     </div>
                 </div>
 
                 <div id="action-buttons">
-                    <button class="action-btn" id="follow-btn">Follow</button>
-                    <button class="action-btn" id="message-btn">Message</button>
+                    <button class="action-btn" id="follow-btn" style="display: none;">Follow</button>
+                    <button class="action-btn" id="edit-profile-btn" style="display: none;"
+                        onclick="window.location.href='artist-settings.html'">Edit Profile</button>
+                    <button class="action-btn" id="message-btn"
+                        onclick="window.location.href='messages.html'">Message</button>
                 </div>
             </div>
 
@@ -71,8 +76,12 @@
                     <h3>About</h3>
                 </div>
                 <div class="section-content">
-                    <p>Professional tattoo artist specializing in realism, anime, and traditional styles. With over 10
-                        years of experience, I bring your vision to life with precision and creativity.</p>
+                    <p>Hi my name is Naomi! I specialize in realistic and bold illustrative tattoos. I love collaborating
+                        with clients to bring their ideas to life, creating pieces that feel personal and timeless. With
+                        a background in both digital and traditional art, I focus on Japanese-inspired designs and anime
+                        aesthetics, blending classic Irezumi elements with contemporary illustration techniques. Each
+                        piece I create honors the rich traditions of Japanese tattooing while incorporating modern
+                        storytelling.</p>
                 </div>
             </div>
 
@@ -108,7 +117,73 @@
                 <div class="section-content">
                     <button id="review-artist-btn">Review Artist</button>
                     <div id="reviews-list">
-                        <p>Recent reviews will appear here...</p>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user-info">
+                                    <img src="images/profile photos/User/UP_1.jpg" alt="cosmic_petal" class="review-profile-pic">
+                                    <span class="review-username">cosmic_petal</span>
+                                </div>
+                                <div class="review-stars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                            <p class="review-text">People keep complimenting my tattoo. The artist knows exactly how to make colors and lines pop. Super happy...</p>
+                        </div>
+                        
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user-info">
+                                    <img src="images/profile photos/User/UP_2.jpg" alt="Electricvibesss77" class="review-profile-pic">
+                                    <span class="review-username">Electricvibesss77</span>
+                                </div>
+                                <div class="review-stars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                            <p class="review-text">Very professional artist. Answered all my questions and made sure I was comfortable throughout...</p>
+                        </div>
+                        
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user-info">
+                                    <img src="images/profile photos/User/UP_3.jpg" alt="midnightwandere..." class="review-profile-pic">
+                                    <span class="review-username">midnightwandere...</span>
+                                </div>
+                                <div class="review-stars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star empty">★</span>
+                                </div>
+                            </div>
+                            <p class="review-text">The tattoo looks amazing, but the session ran longer than expected. Still, totally worth it for the final piece!</p>
+                        </div>
+                        
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user-info">
+                                    <img src="images/profile photos/User/UP_5.jpg" alt="thewanderingquill" class="review-profile-pic">
+                                    <span class="review-username">thewanderingquill</span>
+                                </div>
+                                <div class="review-stars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                            <p class="review-text">Great experience from start to finish. The artist helped refine my idea and gave it the perfect flow on my arm.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,27 +191,58 @@
 
         <!-- Right Portfolio Section -->
         <div id="portfolio-section">
-            <h2 id="portfolio-title">Portfolio</h2>
+            <div id="portfolio-header">
+                <h2 id="portfolio-title">Portfolio</h2>
+                <button id="edit-portfolio-btn" style="display: none;">Edit Portfolio</button>
+            </div>
             <div id="portfolio-grid">
-                <div class="portfolio-item">
-                    <img src="images/tattoos/styles/realism/real_1.jpg" alt="Portfolio 1">
+                <div class="portfolio-item ratio-1-1">
+                    <img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Portfolio 1">
                 </div>
-                <div class="portfolio-item">
+                <div class="portfolio-item ratio-2-3">
                     <img src="images/tattoos/styles/Anime/Anime_girl.jpg" alt="Portfolio 2">
                 </div>
-                <div class="portfolio-item">
-                    <img src="images/tattoos/styles/Traditional/trad_1.jpg" alt="Portfolio 3">
+                <div class="portfolio-item ratio-3-4">
+                    <img src="images/tattoos/styles/Japanese/japanese_2.jpg" alt="Portfolio 3">
                 </div>
-                <div class="portfolio-item">
-                    <img src="images/tattoos/styles/realism/real_2.jpg" alt="Portfolio 4">
+                <div class="portfolio-item ratio-1-1">
+                    <img src="images/tattoos/styles/Anime/Anime_sword.jpg" alt="Portfolio 4">
                 </div>
-                <div class="portfolio-item">
-                    <img src="images/tattoos/styles/Anime/Anime_sword.jpg" alt="Portfolio 5">
+                <div class="portfolio-item ratio-2-3">
+                    <img src="images/tattoos/styles/Japanese/japanese_3.jpg" alt="Portfolio 5">
                 </div>
-                <div class="portfolio-item">
-                    <img src="images/tattoos/styles/Traditional/trad_2.jpg" alt="Portfolio 6">
+                <div class="portfolio-item ratio-3-4">
+                    <img src="images/tattoos/styles/Anime/anime_wolves.jpg" alt="Portfolio 6">
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Edit Overlay -->
+    <div id="portfolio-overlay" class="overlay">
+        <div id="portfolio-modal">
+            <img src="images/favicons/cancel.png" id="close-portfolio-modal" class="close-btn" alt="Close">
+            <h2>Edit Portfolio</h2>
+            
+            <div id="image-upload-area">
+                <div id="drop-zone">
+                    <p>Browse or drop images here</p>
+                    <input type="file" id="file-input" accept="image/*" multiple>
+                </div>
+            </div>
+
+            <form id="portfolio-form">
+                <label for="image-title">Title</label>
+                <input type="text" id="image-title" name="title" placeholder="Enter image title">
+
+                <label for="image-description">Description</label>
+                <textarea id="image-description" name="description" rows="4" placeholder="Enter image description"></textarea>
+
+                <label for="image-tags">Tags</label>
+                <input type="text" id="image-tags" name="tags" placeholder="Enter tags (comma separated)">
+
+                <button type="submit" id="upload-portfolio-btn">Upload Image to Portfolio</button>
+            </form>
         </div>
     </div>
 

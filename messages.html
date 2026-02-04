@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/messages.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body class="messages-page">
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Messages Container -->
+    <div id="messages-container">
+        <!-- Left Sidebar - User List -->
+        <div id="users-sidebar">
+            <div class="user-item" data-user="KaitheTattooGuy" onclick="selectUser('KaitheTattooGuy')">
+                <img src="images/profile photos/Artist/Profile_5.jpg" alt="KaitheTattooGuy" class="user-avatar">
+                <span class="user-name">KaitheTattooGuy</span>
+            </div>
+            <div class="user-item" data-user="NightOwlNeedle" onclick="selectUser('NightOwlNeedle')">
+                <img src="images/profile photos/Artist/Profile_2.jpg" alt="NightOwlNeedle" class="user-avatar">
+                <span class="user-name">NightOwlNeedle</span>
+            </div>
+        </div>
+
+        <!-- Right Side - Message Section -->
+        <div id="message-section">
+            <div id="messages-display">
+                <!-- Messages will be dynamically loaded here -->
+                <div class="message-bubble">
+                    <p>Hey! I love your work. Do you have any availability for next month?</p>
+                </div>
+                <div class="message-bubble">
+                    <p>Thanks for reaching out! Yes, I have some slots open in March.</p>
+                </div>
+                <div class="message-bubble">
+                    <p>That's perfect! What's your booking process?</p>
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div id="message-input-container">
+                <input type="text" id="message-input" placeholder="Message user...">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Messages data for each user
+        const messagesData = {
+            'KaitheTattooGuy': [
+                { text: 'Hi! I\'ve been thinking about getting a wolf tattoo on my upper arm, but I\'m not sure what style would look best. Could you help me figure it out?', sender: 'user' },
+                { text: 'Of course! Wolves look great in several styles. Are you leaning more toward something realistic, or do you prefer a more illustrated/linework look?', sender: 'other' },
+                { text: 'Hmm, I\'m not sure. I like realism but I also love that sketchy look some artists do. Does your shop have someone who specializes in that?', sender: 'user' },
+                { text: 'Of course! Wolves look great in several styles. Are you leaning more toward something realistic, or do you prefer a more illustrated/linework look?', sender: 'other' },
+                { text: 'Yes! One of our artists, Jordan, does gorgeous sketch-style animal pieces. They mix clean lines with textured shading for a really dynamic effect. If you\'d like, I can send you some examples from their portfolio.', sender: 'other' }
+            ],
+            'NightOwlNeedle': [
+                { text: 'Hey! I\'m looking to get a small floral tattoo on my forearm and wanted to check when your next openings are.', sender: 'user' },
+                { text: 'Hi there! We\'d love to help you with that. For small pieces, our earliest availability is next Wednesday at 3 PM or Friday at 11 AM. Would either of those times work for you?', sender: 'other' },
+                { text: 'Friday at 11 AM works perfectly.', sender: 'user' },
+                { text: 'Great! We\'ll go ahead and reserve that spot for you. The artist will chat with you the day of your appointment to finalize the design and details.', sender: 'other' },
+                { text: 'Sounds good! Do I need to do anything beforehand?', sender: 'user' },
+                { text: 'Just make sure you\'re well-rested, hydrated, and have eaten beforehand. Arrive a few minutes early to fill out paperwork, and we\'ll take care of the rest. See you Friday!', sender: 'other' }
+            ]
+        };
+
+        let currentUser = 'KaitheTattooGuy';
+
+        // Function to select a user and display their messages
+        function selectUser(username) {
+            currentUser = username;
+
+            // Update active state on user items
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-user="${username}"]`).classList.add('active');
+
+            // Load messages for selected user
+            loadMessages(username);
+        }
+
+        // Function to load messages for a user
+        function loadMessages(username) {
+            const messagesDisplay = document.getElementById('messages-display');
+            messagesDisplay.innerHTML = '';
+
+            if (messagesData[username]) {
+                messagesData[username].forEach(message => {
+                    const messageBubble = document.createElement('div');
+                    messageBubble.className = message.sender === 'user' ? 'message-bubble sent' : 'message-bubble received';
+                    messageBubble.innerHTML = `<p>${message.text}</p>`;
+                    messagesDisplay.appendChild(messageBubble);
+                });
+
+                // Scroll to bottom to show newest messages
+                messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
+            }
+        }
+
+        // Initialize first user as selected
+        window.addEventListener('load', function () {
+            selectUser('KaitheTattooGuy');
+        });
+
+        // Handle message input (optional - for future functionality)
+        document.addEventListener('DOMContentLoaded', function () {
+            const messageInput = document.getElementById('message-input');
+
+            messageInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    // Add new message to display
+                    const messagesDisplay = document.getElementById('messages-display');
+                    const messageBubble = document.createElement('div');
+                    messageBubble.className = 'message-bubble sent';
+                    messageBubble.innerHTML = `<p>${this.value}</p>`;
+                    messagesDisplay.appendChild(messageBubble);
+
+                    // Clear input
+                    this.value = '';
+
+                    // Scroll to bottom
+                    messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

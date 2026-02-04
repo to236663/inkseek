@@ -1,0 +1,103 @@
+/* Guide Detail Page Styles */
+
+#guide-container {
+    display: flex;
+    justify-content: center;
+    margin: 0px auto;
+    padding: 0 112px;
+}
+
+#guide-content {
+    max-width: 800px;
+    width: 100%;
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#guide-header-section {
+    margin-bottom: 30px;
+}
+
+#guide-cover {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+#guide-title {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 36px;
+    color: #333;
+    margin: 0 0 20px 0;
+    line-height: 1.2;
+    background-color: #4FBA7F;
+    padding: 15px 20px;
+    border-radius: 12px;
+    color: black;
+}
+
+#guide-body {
+    font-family: "Zain", sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+.guide-section {
+    margin-bottom: 30px;
+}
+
+.guide-section h2 {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 28px;
+    color: black;
+    margin: 0 0 15px 0;
+}
+
+.guide-section h3 {
+    font-family: "BBH Hegarty", sans-serif;
+    font-size: 22px;
+    color: #333;
+    margin: 15px 0 10px 0;
+}
+
+.guide-section p {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+}
+
+.guide-section ul {
+    margin: 0 0 15px 0;
+    padding-left: 30px;
+}
+
+.guide-section li {
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #guide-container {
+        padding: 0 20px;
+        margin: 20px auto;
+    }
+
+    #guide-content {
+        padding: 20px;
+    }
+
+    #guide-title {
+        font-size: 28px;
+    }
+
+    .guide-section h2 {
+        font-size: 24px;
+    }
+
+    .guide-section h3 {
+        font-size: 20px;
+    }
+}

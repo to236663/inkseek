@@ -35,8 +35,8 @@
                 <label for="confirm-password">Confirm Password</label>
                 <input type="password" id="confirm-password" name="confirm-password">
 
-                <a href="artist-profile.html"><button type="button" id="login-button"
-                        onclick="setLoginState('artist')">Create</button></a>
+                <button type="button" id="login-button"
+                    onclick="const username = document.getElementById('username').value; setLoginState('artist', username ? '@' + username : '@username'); window.location.href='artist-profile.html';">Create</button>
             </form>
 
             <div id="signup-links">

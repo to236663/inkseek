@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/settings.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Settings Container -->
+    <div id="settings-container">
+        <div id="settings-column">
+            <h1>Edit Profile</h1>
+
+            <!-- Profile Picture Section -->
+            <div id="profile-picture-section">
+                <div id="settings-profile-picture">
+                    <img src="images/profile photos/User/UP_4.jpg" alt="Profile Picture">
+                </div>
+                <button id="edit-picture-btn">Edit Profile Picture</button>
+            </div>
+
+            <!-- Edit Form -->
+            <div id="settings-form">
+                <form>
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" value="Mayson Quill">
+
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username"
+                        value="Thewanderingquill">
+
+                    <label for="about">About</label>
+                    <textarea id="about" name="about" rows="5" placeholder="Tell us about yourself">Coffee-fueled wanderer 📚✨
+Always chasing the next tattoo adventure
+Sketches, stories & spontaneous road trips
+Currently obsessed with watercolor florals</textarea>
+
+                    <button type="submit" id="save-changes-btn">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Account Actions -->
+            <div id="account-actions">
+                <a href="artist-settings.html" class="action-link">Convert to Artist Account</a>
+                <a href="#" class="action-link">Delete Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

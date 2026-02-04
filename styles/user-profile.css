@@ -163,16 +163,27 @@
 
 #bookmarks-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(2, 296px);
+    gap: 12px;
     width: 100%;
 }
 
 .bookmark-item {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
+}
+
+.bookmark-item.ratio-1-1 {
+    aspect-ratio: 1 / 1;
+}
+
+.bookmark-item.ratio-3-4 {
+    aspect-ratio: 3 / 4;
+}
+
+.bookmark-item.ratio-2-3 {
+    aspect-ratio: 2 / 3;
 }
 
 .bookmark-item img {

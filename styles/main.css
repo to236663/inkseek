@@ -132,13 +132,13 @@
      align-items: center;
      gap: 8px;
      cursor: pointer;
-     position: relative;
-     width: fit-content;
  }
 
  #profile-link {
      display: inline-block;
-     width:
+     width: 55px;
+     height: 55px;
+     border-radius: 50%;
  }
 
  .nav-profile-pic {

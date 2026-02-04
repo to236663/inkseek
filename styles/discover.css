@@ -2,7 +2,12 @@
     background-color: #4FBA7F;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 10px;
+}
+
+#discover-header h1 {
+    font-size: 28px;
+    margin: 10px 0;
 }
 
 #search-form {
@@ -10,16 +15,16 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin: 20px auto;
-    max-width: 800px;
+    margin: 10px auto;
+    max-width: 600px;
 }
 
 #search-bar {
     flex: 1;
     min-width: 240px;
-    max-width: 640px;
-    padding: 8px 14px;
-    font-size: 16px;
+    max-width: 600px;
+    padding: 6px 12px;
+    font-size: 14px;
     border: none;
     border-radius: 50px;
     outline: none;

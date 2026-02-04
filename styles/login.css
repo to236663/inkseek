@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 60vh;
-    padding: 40px 20px;
+    padding: 0 20px 40px;
 }
 
 #login-box {
@@ -37,14 +37,14 @@
     font-family: "Zain", sans-serif;
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     color: #333;
 }
 
 #login-form input[type="text"],
 #login-form input[type="password"],
 #login-form input[type="email"] {
-    padding: 12px 16px;
+    padding: 8px 16px;
     font-size: 16px;
     border: 2px solid #000;
     border-radius: 25px;
@@ -77,7 +77,7 @@
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
-    width: auto;
+    width: 100%;
 }
 
 #login-button:hover {

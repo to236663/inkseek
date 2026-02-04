@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image View - Inkseek</title>
+    <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/image-view.css">
+    <script src="scripts/components.js"></script>
+    <script src="scripts/auth.js"></script>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Image View Content -->
+    <div id="image-view-container">
+        <!-- Left Column - Image Details -->
+        <div id="left-column">
+            <div id="image-display">
+                <img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Tattoo Image">
+            </div>
+
+            <div id="image-info">
+                <div id="title-row">
+                    <h2 id="image-title">Dragon and Koi Sleeve</h2>
+                    <div id="action-icons">
+                        <img id="bookmark-icon" src="images/favicons/bookmark.png" alt="Bookmark" class="action-icon">
+                        <span class="three-dots">⋯</span>
+                    </div>
+                </div>
+
+                <a href="artist-profile.html" id="artist-link">
+                    <img src="images/profile photos/Artist/Profile_1.jpg" alt="Artist" id="artist-thumbnail">
+                    <span id="artist-username">@SilverSpire_Ink</span>
+                </a>
+
+                <div id="style-tag">
+                    <span class="tag">Japanese</span>
+                </div>
+
+                <div id="image-description">
+                    <p>This intricate full sleeve features a powerful dragon intertwined with koi fish, symbolizing
+                        strength and perseverance. The design incorporates traditional Japanese elements including
+                        cherry blossoms and waves, creating a dynamic composition that flows naturally with the arm's
+                        contours.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Artist's Other Work -->
+        <div id="right-column">
+            <a href="artist-profile.html" id="artist-gallery-header">
+                <span>This artist</span>
+                <img src="images/favicons/Right arrow.png" class="arrow" alt="Arrow">
+            </a>
+
+            <div id="artist-gallery">
+                <div class="gallery-item ratio-1-1">
+                    <img src="images/tattoos/styles/Japanese/japanese_2.jpg" alt="Artist work 1">
+                </div>
+                <div class="gallery-item ratio-3-4">
+                    <img src="images/tattoos/styles/Japanese/japanese_3.jpg" alt="Artist work 2">
+                </div>
+                <div class="gallery-item ratio-2-3">
+                    <img src="images/tattoos/styles/Japanese/japanese_4.jpg" alt="Artist work 3">
+                </div>
+                <div class="gallery-item ratio-1-1">
+                    <img src="images/tattoos/styles/Japanese/japanese_5.jpg" alt="Artist work 4">
+                </div>
+                <div class="gallery-item ratio-3-4">
+                    <img src="images/tattoos/styles/realism/real_1.jpg" alt="Artist work 5">
+                </div>
+                <div class="gallery-item ratio-2-3">
+                    <img src="images/tattoos/styles/realism/real_2.jpg" alt="Artist work 6">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>

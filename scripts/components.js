@@ -23,6 +23,11 @@ async function loadComponents() {
         checkLoginState();
     }
 
+    // Initialize page-specific features
+    if (typeof initializePageFeatures === 'function') {
+        initializePageFeatures();
+    }
+
     // Remove loading class and show content
     document.body.classList.remove('loading');
     document.body.classList.add('loaded');

@@ -1,0 +1,198 @@
+/* Image View Container */
+#image-view-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 30px auto 20px;
+    padding: 0 20px;
+    justify-content: center;
+}
+
+/* Left Column - Image Details */
+#left-column {
+    flex: 0 0 400px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#image-display {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#image-display img {
+    width: 100%;
+    max-height: 400px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Image Info Section */
+#image-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+#image-title {
+    font-family: "BBH Hegarty", serif;
+    font-size: 24px;
+    margin: 0;
+    flex: 1;
+}
+
+#action-icons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.action-icon {
+    width: 24px;
+    height: auto;
+    cursor: pointer;
+}
+
+.three-dots {
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    line-height: 1;
+}
+
+/* Artist Info */
+#artist-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+#artist-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#artist-username {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Style Tag */
+#style-tag {
+    display: flex;
+    gap: 8px;
+}
+
+#style-tag .tag {
+    background-color: #4FBA7F;
+    color: #000;
+    font-family: "Zain", sans-serif;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Description */
+#image-description {
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+#image-description p {
+    margin: 0;
+}
+
+/* Right Column - Artist Gallery */
+#right-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#artist-gallery-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Zain", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+}
+
+#artist-gallery-header .arrow {
+    width: 20px;
+    height: 20px;
+}
+
+/* Artist Gallery Grid */
+#artist-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 296px);
+    gap: 12px;
+}
+
+.gallery-item {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.gallery-item.ratio-1-1 {
+    aspect-ratio: 1 / 1;
+}
+
+.gallery-item.ratio-3-4 {
+    aspect-ratio: 3 / 4;
+}
+
+.gallery-item.ratio-2-3 {
+    aspect-ratio: 2 / 3;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #image-view-container {
+        flex-direction: column;
+    }
+
+    #left-column {
+        flex: 1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    #artist-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    #left-column {
+        padding: 20px;
+    }
+}
