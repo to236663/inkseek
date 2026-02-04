@@ -84,7 +84,7 @@ function logout() {
 // Convert account function
 function convertAccount() {
     const currentUserType = sessionStorage.getItem('userType') || 'user';
-    
+
     if (currentUserType === 'user') {
         // Convert to artist
         sessionStorage.setItem('userType', 'artist');
@@ -155,7 +155,7 @@ function initializePageFeatures() {
         const portfolioForm = document.getElementById('portfolio-form');
 
         if (editPortfolioBtn) {
-            editPortfolioBtn.addEventListener('click', function() {
+            editPortfolioBtn.addEventListener('click', function () {
                 if (portfolioOverlay) {
                     portfolioOverlay.classList.add('active');
                 }
@@ -163,7 +163,7 @@ function initializePageFeatures() {
         }
 
         if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
+            closeModalBtn.addEventListener('click', function () {
                 if (portfolioOverlay) {
                     portfolioOverlay.classList.remove('active');
                 }
@@ -172,7 +172,7 @@ function initializePageFeatures() {
 
         // Close overlay when clicking outside modal
         if (portfolioOverlay) {
-            portfolioOverlay.addEventListener('click', function(e) {
+            portfolioOverlay.addEventListener('click', function (e) {
                 if (e.target === portfolioOverlay) {
                     portfolioOverlay.classList.remove('active');
                 }
@@ -181,7 +181,7 @@ function initializePageFeatures() {
 
         // Handle form submission
         if (portfolioForm) {
-            portfolioForm.addEventListener('submit', function(e) {
+            portfolioForm.addEventListener('submit', function (e) {
                 e.preventDefault();
                 // Form submission logic would go here
                 alert('Portfolio image upload functionality would be implemented here');
