@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles/discover.css">
     <script src="scripts/components.js"></script>
     <script src="scripts/auth.js"></script>
+    <script src="scripts/filters.js" defer></script>
 </head>
 
 <body>
@@ -21,10 +22,109 @@
             <h1>Discover your next look</h1>
         </header>
         <form id="search-form" role="search" aria-label="Site search">
-            <label for="search-bar" class="visually-hidden">Search</label>
-            <input id="search-bar" type="search" name="q" placeholder="Search styles, locations, artists, etc..." />
+            <div class="search-wrapper">
+                <label for="search-bar" class="visually-hidden">Search</label>
+                <input id="search-bar" type="search" name="q" placeholder="Search styles, locations, artists, etc..." />
+                <button type="button" id="filter-button" aria-label="Open filters">
+                    <img src="images/favicons/filter.png" alt="Filter icon">
+                </button>
+            </div>
         </form>
     </div>
+
+    <!-- Filter Overlay -->
+    <div id="filter-overlay" class="filter-overlay">
+        <div class="filter-content">
+            <div class="filter-header">
+                <h2>Filters</h2>
+                <button id="close-filter" aria-label="Close filters">
+                    <img src="images/favicons/cancel.png" alt="Close">
+                </button>
+            </div>
+
+            <div class="filter-body">
+                <!-- Style Filter -->
+                <div class="filter-section">
+                    <h3>Style</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="style" value="portraiture"> Portraiture</label>
+                        <label><input type="checkbox" name="style" value="cartoon-anime"> Cartoon/Anime</label>
+                        <label><input type="checkbox" name="style" value="abstract"> Abstract</label>
+                        <label><input type="checkbox" name="style" value="script-lettering"> Script/Lettering</label>
+                        <label><input type="checkbox" name="style" value="black-gray"> Black & Gray</label>
+                        <label><input type="checkbox" name="style" value="japanese"> Japanese</label>
+                        <label><input type="checkbox" name="style" value="tribal"> Tribal</label>
+                        <label><input type="checkbox" name="style" value="neo-traditional"> Neo-Traditional</label>
+                        <label><input type="checkbox" name="style" value="sketch"> Sketch</label>
+                        <label><input type="checkbox" name="style" value="illustrative"> Illustrative</label>
+                        <label><input type="checkbox" name="style" value="3d"> 3D</label>
+                        <label><input type="checkbox" name="style" value="minimalist"> Minimalist</label>
+                        <label><input type="checkbox" name="style" value="pointilism"> Pointilism</label>
+                        <label><input type="checkbox" name="style" value="geometric"> Geometric</label>
+                        <label><input type="checkbox" name="style" value="traditional"> Traditional</label>
+                        <label><input type="checkbox" name="style" value="watercolor"> Watercolor</label>
+                        <label><input type="checkbox" name="style" value="fine-line"> Fine Line</label>
+                        <label><input type="checkbox" name="style" value="realism"> Realism</label>
+                    </div>
+                </div>
+
+                <!-- Size Filter -->
+                <div class="filter-section">
+                    <h3>Size</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="size" value="palm"> Palm size or smaller</label>
+                        <label><input type="checkbox" name="size" value="hand"> Hand size</label>
+                        <label><input type="checkbox" name="size" value="half-sleeve"> Half sleeve</label>
+                        <label><input type="checkbox" name="size" value="full-sleeve"> Full sleeve</label>
+                        <label><input type="checkbox" name="size" value="torso"> Torso or larger</label>
+                    </div>
+                </div>
+
+                <!-- Location Filter -->
+                <div class="filter-section">
+                    <h3>Location</h3>
+                    <div class="filter-options">
+                        <label for="location-input" class="visually-hidden">Location</label>
+                        <input type="text" id="location-input" name="location" placeholder="Enter location...">
+                    </div>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="filter-section">
+                    <h3>Price</h3>
+                    <div class="filter-options price-range">
+                        <div class="price-input">
+                            <label for="price-min">Min</label>
+                            <input type="number" id="price-min" name="price-min" placeholder="$0" min="0">
+                        </div>
+                        <span class="price-separator">-</span>
+                        <div class="price-input">
+                            <label for="price-max">Max</label>
+                            <input type="number" id="price-max" name="price-max" placeholder="$1000" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Star Ratings Filter -->
+                <div class="filter-section">
+                    <h3>Star Ratings</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="rating" value="5"> ★★★★★ (5 stars)</label>
+                        <label><input type="checkbox" name="rating" value="4"> ★★★★☆ (4+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="3"> ★★★☆☆ (3+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="2"> ★★☆☆☆ (2+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="1"> ★☆☆☆☆ (1+ stars)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-footer">
+                <button id="clear-filters" class="secondary-btn">Clear All</button>
+                <button id="apply-filters" class="primary-btn">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+
     <div id="grid-container">
         <div id="grid-item">
             <a href="image-view.html"><img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Image 1"></a>
@@ -49,6 +149,32 @@
         </div>
         <div id="grid-item">
             <a href="image-view.html"><img src="images/tattoos/styles/realism/real_3.jpg" alt="Image 8"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/3D/3d_1.jpg" alt="Image 9"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Blackwork/Blackwork_1.jpg" alt="Image 10"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Neo-traditional/neo-traditional_1.jpg"
+                    alt="Image 11"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Fine Line/fineline_1.jpg" alt="Image 12"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Anime/Anime_girl.jpg" alt="Image 13"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Sketch/sketch_1.jpg" alt="Image 14"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Portraiture/portrait_1.jpg" alt="Image 15"></a>
+        </div>
+        <div id="grid-item">
+            <a href="image-view.html"><img src="images/tattoos/styles/Illustrative/illustrative_1.jpg"
+                    alt="Image 16"></a>
         </div>
     </div>
 </body>

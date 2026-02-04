@@ -124,27 +124,27 @@ function initializePageFeatures() {
     }
 
     // Image view page - bookmark toggle functionality
-    if (window.location.pathname.includes('image-view.html')) {
-        const bookmarkIcon = document.getElementById('bookmark-icon');
-        if (bookmarkIcon) {
-            // Check if this image is already bookmarked
-            const isBookmarked = sessionStorage.getItem('bookmark-current') === 'true';
-            if (isBookmarked) {
-                bookmarkIcon.src = 'images/favicons/bookmark-clicked.png';
-            }
-
-            bookmarkIcon.addEventListener('click', function () {
-                // Toggle between bookmark images
-                const nowBookmarked = this.src.includes('bookmark-clicked');
-                if (nowBookmarked) {
-                    this.src = 'images/favicons/bookmark.png';
-                    sessionStorage.setItem('bookmark-current', 'false');
-                } else {
-                    this.src = 'images/favicons/bookmark-clicked.png';
-                    sessionStorage.setItem('bookmark-current', 'true');
-                }
-            });
+    const bookmarkIcon = document.getElementById('bookmark-icon');
+    if (bookmarkIcon) {
+        // Check if this image is already bookmarked
+        const isBookmarked = sessionStorage.getItem('bookmark-current') === 'true';
+        if (isBookmarked) {
+            bookmarkIcon.src = 'images/favicons/bookmark-clicked.png';
         }
+
+        bookmarkIcon.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Toggle between bookmark images
+            if (this.src.includes('bookmark-clicked')) {
+                this.src = 'images/favicons/bookmark.png';
+                sessionStorage.setItem('bookmark-current', 'false');
+            } else {
+                this.src = 'images/favicons/bookmark-clicked.png';
+                sessionStorage.setItem('bookmark-current', 'true');
+            }
+        });
     }
 
     // Portfolio edit overlay functionality

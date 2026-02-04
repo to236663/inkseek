@@ -14,20 +14,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     margin: 10px auto;
     max-width: 600px;
+}
+
+.search-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
 }
 
 #search-bar {
     flex: 1;
     min-width: 240px;
     max-width: 600px;
-    padding: 6px 12px;
+    padding: 10px 50px 10px 16px;
     font-size: 14px;
     border: none;
     border-radius: 50px;
     outline: none;
+    width: 100%;
 }
 
 .visually-hidden {
@@ -40,4 +47,227 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+}
+
+/* Filter Button */
+#filter-button {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+}
+
+#filter-button:hover {
+    opacity: 0.7;
+}
+
+#filter-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Filter Overlay */
+.filter-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.filter-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Filter Header */
+.filter-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.filter-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+#close-filter {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 20px;
+}
+
+#close-filter img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Filter Body */
+.filter-body {
+    padding: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+}
+
+.filter-section {
+    margin-bottom: 25px;
+}
+
+.filter-section h3 {
+    font-family: 'BBH Hegarty', sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filter-options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.filter-options input[type="text"],
+.filter-options input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+}
+
+/* Price Range */
+.price-range {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
+.price-input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.price-input label {
+    font-size: 12px;
+    color: #666;
+}
+
+.price-separator {
+    font-size: 18px;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* Filter Footer */
+.filter-footer {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.secondary-btn,
+.primary-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.secondary-btn {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.secondary-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.primary-btn {
+    background-color: #E74C3C;
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: #C0392B;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .filter-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .filter-header,
+    .filter-body,
+    .filter-footer {
+        padding: 15px;
+    }
+
+    .price-range {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .price-separator {
+        margin-top: 0;
+    }
 }

@@ -83,6 +83,33 @@
 
     <!-- Footer -->
     <div id="footer-placeholder"></div>
+
+    <script>
+        // Bookmark toggle functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const bookmarkIcon = document.getElementById('bookmark-icon');
+            if (bookmarkIcon) {
+                // Check if already bookmarked
+                const isBookmarked = sessionStorage.getItem('bookmark-current') === 'true';
+                if (isBookmarked) {
+                    bookmarkIcon.src = 'images/favicons/bookmark-clicked.png';
+                }
+
+                // Add click event
+                bookmarkIcon.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    if (this.src.includes('bookmark-clicked')) {
+                        this.src = 'images/favicons/bookmark.png';
+                        sessionStorage.setItem('bookmark-current', 'false');
+                    } else {
+                        this.src = 'images/favicons/bookmark-clicked.png';
+                        sessionStorage.setItem('bookmark-current', 'true');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
