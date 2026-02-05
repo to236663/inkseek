@@ -48,10 +48,11 @@
  #navbar {
      display: flex;
      background-color: #F2F1ED;
-     margin: 0 20px;
-     padding: 10px 0;
+     margin: 0;
+     padding: 10px 20px;
      align-items: center;
      position: relative;
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
  }
 
  #bottle-logo {
@@ -144,15 +145,16 @@
      display: flex;
      flex-direction: row;
      align-items: center;
-     gap: 8px;
+     gap: 12px;
      cursor: pointer;
  }
 
  #profile-link {
      display: inline-block;
-     width: 55px;
-     height: 55px;
+     width: 75px;
+     height: 75px;
      border-radius: 50%;
+     flex-shrink: 0;
  }
 
  .nav-profile-pic {
@@ -169,13 +171,14 @@
  }
 
  .dropdown-arrow {
-     width: 15px;
-     height: 15px;
-     border-right: 2px solid #333;
-     border-bottom: 2px solid #333;
+     width: 24px;
+     height: 24px;
+     border-right: 3px solid #333;
+     border-bottom: 3px solid #333;
      transform: rotate(45deg);
-     margin-top: -5px;
+     margin-top: -8px;
      cursor: pointer;
+     flex-shrink: 0;
  }
 
  /* Dropdown Menu */
@@ -289,15 +292,17 @@
  footer {
      background-color: #4FBA7F;
      color: black;
-     padding: 20px;
+     padding: 30px 40px;
      display: flex;
      align-items: center;
      justify-content: center;
      border-top: 3px solid #3C9A66;
+     gap: 60px;
+     font-size: 18px;
  }
 
  #simple-logo {
-     width: 25px;
+     width: 50px;
      height: auto;
-     margin-right: 50px;
+     margin-right: 75px;
  }

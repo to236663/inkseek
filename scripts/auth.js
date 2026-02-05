@@ -189,6 +189,121 @@ function initializePageFeatures() {
                 portfolioForm.reset();
             });
         }
+
+        // Review Artist overlay functionality
+        const reviewArtistBtn = document.getElementById('review-artist-btn');
+        const reviewOverlay = document.getElementById('review-overlay');
+        const closeReviewBtn = document.getElementById('close-review-modal');
+        const submitReviewBtn = document.getElementById('submit-review-btn');
+        const ratingStars = document.querySelectorAll('.rating-star');
+        let selectedRating = 0;
+
+        if (reviewArtistBtn) {
+            reviewArtistBtn.addEventListener('click', function () {
+                if (reviewOverlay) {
+                    reviewOverlay.classList.add('active');
+                    selectedRating = 0;
+                    ratingStars.forEach(star => star.classList.remove('active'));
+                }
+            });
+        }
+
+        if (closeReviewBtn) {
+            closeReviewBtn.addEventListener('click', function () {
+                if (reviewOverlay) {
+                    reviewOverlay.classList.remove('active');
+                    document.getElementById('review-text-input').value = '';
+                    selectedRating = 0;
+                    ratingStars.forEach(star => star.classList.remove('active'));
+                }
+            });
+        }
+
+        // Close overlay when clicking outside modal
+        if (reviewOverlay) {
+            reviewOverlay.addEventListener('click', function (e) {
+                if (e.target === reviewOverlay) {
+                    reviewOverlay.classList.remove('active');
+                    document.getElementById('review-text-input').value = '';
+                    selectedRating = 0;
+                    ratingStars.forEach(star => star.classList.remove('active'));
+                }
+            });
+        }
+
+        // Star rating functionality
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function () {
+                selectedRating = parseInt(this.getAttribute('data-value'));
+                ratingStars.forEach((s, index) => {
+                    if (index < selectedRating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseenter', function () {
+                const hoverValue = parseInt(this.getAttribute('data-value'));
+                ratingStars.forEach((s, index) => {
+                    if (index < hoverValue) {
+                        s.style.color = '#FFD700';
+                    } else {
+                        s.style.color = '#D7D7D7';
+                    }
+                });
+            });
+        });
+
+        // Reset star colors on mouse leave
+        if (reviewOverlay) {
+            const starRating = document.querySelector('.star-rating');
+            if (starRating) {
+                starRating.addEventListener('mouseleave', function () {
+                    ratingStars.forEach((s, index) => {
+                        if (index < selectedRating) {
+                            s.style.color = '#FFD700';
+                        } else {
+                            s.style.color = '#D7D7D7';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Submit review
+        if (submitReviewBtn) {
+            submitReviewBtn.addEventListener('click', function () {
+                const reviewText = document.getElementById('review-text-input').value;
+                if (selectedRating === 0) {
+                    alert('Please select a star rating');
+                    return;
+                }
+                // Close overlay without any real functionality
+                reviewOverlay.classList.remove('active');
+                document.getElementById('review-text-input').value = '';
+                selectedRating = 0;
+                ratingStars.forEach(star => star.classList.remove('active'));
+            });
+        }
+    }
+}
+
+// Handle login with artist/user type from URL parameter
+function handleLogin() {
+    const username = document.getElementById('username').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const userType = urlParams.get('type') || 'user';
+
+    const formattedUsername = username ? (username.startsWith('@') ? username : '@' + username) : (userType === 'artist' ? '@SilverSpire_Ink' : '@Thewanderingquill');
+
+    setLoginState(userType, formattedUsername);
+
+    if (userType === 'artist') {
+        window.location.href = 'artist-profile.html';
+    } else {
+        window.location.href = 'user-profile.html';
     }
 }
 
