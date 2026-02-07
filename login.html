@@ -29,9 +29,7 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password">
 
-                <button type="button" id="login-button"
-                    onclick="const username = document.getElementById('username').value; setLoginState('user', username ? '@' + username : '@username'); window.location.href='user-profile.html';">Log
-                    In</button>
+                <button type="button" id="login-button" onclick="handleLogin()">Log In</button>
             </form>
 
             <div id="signup-links">

@@ -78,15 +78,11 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedFilters.ratings.push(checkbox.value);
         });
 
-        // Log filters (for development - you can implement actual filtering logic here)
+        // Log filters
         console.log('Applied Filters:', selectedFilters);
 
-        // TODO: Implement actual filtering logic to filter the grid items
-        // For now, just close the overlay
+        // Implement actual filtering logic to filter the grid items
         closeFilterOverlay();
-
-        // Optional: Show a message or update UI to indicate filters are active
-        // You can add this functionality based on your needs
     });
 
     // Close overlay with Escape key

@@ -36,7 +36,7 @@
                 <input type="password" id="confirm-password" name="confirm-password">
 
                 <button type="button" id="login-button"
-                    onclick="const username = document.getElementById('username').value; setLoginState('user', username ? '@' + username : '@username'); window.location.href='user-profile.html';">Create</button>
+                    onclick="const username = document.getElementById('username').value; setLoginState('user', username ? (username.startsWith('@') ? username : '@' + username) : '@Thewanderingquill'); window.location.href='user-profile.html';">Create</button>
             </form>
 
             <div id="signup-links">
