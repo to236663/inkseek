@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = $_POST['username'];
 
         // Get the password from the form input and store it in a variable
-        // md5() converts the plain text password into an MD5 hash
-        $password = md5($_POST['password']);
+        $password = $_POST['password'];
 
         // Prepare a SQL query that selects a user where the username matches
         $stmt = $mysqli->prepare("SELECT * FROM accounts WHERE username = ?");
@@ -33,8 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Fetch the result as an object so we can access columns like $row->username
         $row = $result->fetch_object();
-
-        // Check if a row was found AND if the MD5 hashed password matches the one stored in the database
+        
         if ($row && $password == $row->password) {
 
             // Mark the user as logged in by setting a session variable

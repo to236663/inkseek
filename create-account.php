@@ -20,14 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the email from the form input
     $email = $_POST['email'];
 
-    // Get the password from the form input and hash it with MD5
-    $password = md5($_POST['password']);
+    // Get the password from the form input 
+    $password = $_POST['password'];
 
     // Get the confirm password from the form input
     $confirm_password = $_POST['confirm_password'];
 
     // Check if the password and confirm password match before doing anything
-    if (md5($_POST['confirm_password']) != $password) {
+    if ($_POST['confirm_password'] != $password) {
 
         // If they don't match, set an error message
         $error = "Passwords do not match.";
