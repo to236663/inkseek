@@ -27,11 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
 
     // Check if the password and confirm password match before doing anything
-    if ($_POST['confirm_password']) != $password {
+    if ($confirm_password != $password) {
 
         // If they don't match, set an error message
         $error = "Passwords do not match.";
-
     } else {
 
         // Check if the username already exists in the database
@@ -51,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set an error message telling the user the username is taken
             $error = "Username is already taken. Please choose another.";
-
         } else {
 
             // Check if the email already exists in the database
@@ -71,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Set an error message telling the user the email is already in use
                 $error = "An account with that email already exists.";
-
             } else {
 
                 // All checks passed so insert the new account into the database
@@ -96,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Stop the rest of the PHP script from running
                     exit();
-
                 } else {
 
                     // Something went wrong with the insert

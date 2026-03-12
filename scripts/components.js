@@ -18,11 +18,6 @@ async function loadComponents() {
     await loadComponent('navbar-placeholder', 'components/navbar.php');
     await loadComponent('footer-placeholder', 'components/footer.html');
 
-    // After loading navbar, check login state
-    if (typeof checkLoginState === 'function') {
-        checkLoginState();
-    }
-
     // Initialize page-specific features
     if (typeof initializePageFeatures === 'function') {
         initializePageFeatures();

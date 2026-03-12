@@ -1,9 +1,20 @@
 <?php
-require 'connect.php';
+require_once __DIR__ . '/connect.php';
 session_start();
+
+function e($value)
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
 
 // Get artist profile_id from URL parameter
 $profile_id = $_GET['profile_id'] ?? null;
+
+// Redirect to login if viewing own profile while not logged in
+if ($profile_id === null && (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true)) {
+    header('Location: login.php');
+    exit();
+}
 
 // Get map data for this artist
 $map_data = null;
@@ -26,7 +37,7 @@ if ($profile_id) {
     <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/artist-profile.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="scripts/components.js"></script>
     <script src="scripts/auth.js"></script>
@@ -87,7 +98,7 @@ if ($profile_id) {
                     <button class="action-btn" id="edit-profile-btn" style="display: none;"
                         onclick="window.location.href='artist-settings.php'">Edit Profile</button>
                     <button class="action-btn" id="message-btn"
-                        onclick="window.location.href='messages.html'">Message</button>
+                        onclick="window.location.href='messages.php'">Message</button>
                 </div>
             </div>
 
@@ -123,238 +134,238 @@ if ($profile_id) {
             <div class="info-section">
                 <div class="section-header">
                     <h3>Location</h3>
-                <div class="section-content">
-        <?php if ($map_data): ?>
-            <!-- Show address text -->
-            <p id="artist-address">
-                <?= e($map_data['address']) ?>, 
-                <?= e($map_data['city']) ?>, 
-                <?= e($map_data['state']) ?> 
-                <?= e($map_data['postal_code']) ?>
-            </p>
-            <!-- Map container -->
-            <div id="artist-map" style="height: 300px; width: 100%; border-radius: 8px;"></div>
+                    <div class="section-content">
+                        <?php if ($map_data): ?>
+                            <!-- Show address text -->
+                            <p id="artist-address">
+                                <?= e($map_data['address']) ?>,
+                                <?= e($map_data['city']) ?>,
+                                <?= e($map_data['state']) ?>
+                                <?= e($map_data['postal_code']) ?>
+                            </p>
+                            <!-- Map container -->
+                            <div id="artist-map" style="height: 300px; width: 100%; border-radius: 8px;"></div>
 
-            <script>
-                // Build full address string for geocoding
-                const address = "<?= e($map_data['address']) ?>, <?= e($map_data['city']) ?>, <?= e($map_data['state']) ?> <?= e($map_data['postal_code']) ?>";
+                            <script>
+                                // Build full address string for geocoding
+                                const address = "<?= e($map_data['address']) ?>, <?= e($map_data['city']) ?>, <?= e($map_data['state']) ?> <?= e($map_data['postal_code']) ?>";
 
-                // Geocode address using OpenStreetMap Nominatim
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.length > 0) {
-                            const lat = parseFloat(data[0].lat);
-                            const lon = parseFloat(data[0].lon);
+                                // Geocode address using OpenStreetMap Nominatim
+                                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.length > 0) {
+                                            const lat = parseFloat(data[0].lat);
+                                            const lon = parseFloat(data[0].lon);
 
-                            // Initialize Leaflet map
-                            const map = L.map('artist-map').setView([lat, lon], 15);
+                                            // Initialize Leaflet map
+                                            const map = L.map('artist-map').setView([lat, lon], 15);
 
-                            // Add OpenStreetMap tiles
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            }).addTo(map);
+                                            // Add OpenStreetMap tiles
+                                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                            }).addTo(map);
 
-                            // Add marker at artist location
-                            L.marker([lat, lon])
-                                .addTo(map)
-                                .bindPopup(`<b><?= e($map_data['address']) ?></b><br><?= e($map_data['city']) ?>, <?= e($map_data['state']) ?>`)
-                                .openPopup();
-                        } else {
-                            document.getElementById('artist-map').innerHTML = '<p>Could not load map for this address.</p>';
-                        }
-                    })
-                    .catch(() => {
-                        document.getElementById('artist-map').innerHTML = '<p>Could not load map.</p>';
-                    });
-            </script>
+                                            // Add marker at artist location
+                                            L.marker([lat, lon])
+                                                .addTo(map)
+                                                .bindPopup(`<b><?= e($map_data['address']) ?></b><br><?= e($map_data['city']) ?>, <?= e($map_data['state']) ?>`)
+                                                .openPopup();
+                                        } else {
+                                            document.getElementById('artist-map').innerHTML = '<p>Could not load map for this address.</p>';
+                                        }
+                                    })
+                                    .catch(() => {
+                                        document.getElementById('artist-map').innerHTML = '<p>Could not load map.</p>';
+                                    });
+                            </script>
 
-        <?php else: ?>
-            <!-- No location saved -->
-            <?php if (isset($_SESSION['logged_in_user_id']) && $_SESSION['logged_in_access_level'] === 'artist'): ?>
-                <a href="artist-settings.php" id="add-location-btn">+ Add Your Location</a>
-            <?php else: ?>
-                <p>No location available for this artist.</p>
-            <?php endif; ?>
-        <?php endif; ?>
-    </div>
-</div>
-
-            <!-- Reviews Section -->
-            <div class="info-section">
-                <div class="section-header">
-                    <h3>Reviews</h3>
+                        <?php else: ?>
+                            <!-- No location saved -->
+                            <?php if (isset($_SESSION['logged_in_account_id']) && $_SESSION['logged_in_access_level'] === 'artist'): ?>
+                                <a href="artist-settings.php" id="add-location-btn">+ Add Your Location</a>
+                            <?php else: ?>
+                                <p>No location available for this artist.</p>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <div class="section-content">
-                    <button id="review-artist-btn">Review Artist</button>
-                    <div id="reviews-list">
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="review-user-info">
-                                    <img src="images/profile photos/User/UP_1.jpg" alt="cosmic_petal"
-                                        class="review-profile-pic">
-                                    <span class="review-username">cosmic_petal</span>
-                                </div>
-                                <div class="review-stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                </div>
-                            </div>
-                            <p class="review-text">People keep complimenting my tattoo. The artist knows exactly how to
-                                make colors and lines pop. Super happy...</p>
-                        </div>
 
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="review-user-info">
-                                    <img src="images/profile photos/User/UP_2.jpg" alt="Electricvibesss77"
-                                        class="review-profile-pic">
-                                    <span class="review-username">Electricvibesss77</span>
+                <!-- Reviews Section -->
+                <div class="info-section">
+                    <div class="section-header">
+                        <h3>Reviews</h3>
+                    </div>
+                    <div class="section-content">
+                        <button id="review-artist-btn">Review Artist</button>
+                        <div id="reviews-list">
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="review-user-info">
+                                        <img src="images/profile photos/User/UP_1.jpg" alt="cosmic_petal"
+                                            class="review-profile-pic">
+                                        <span class="review-username">cosmic_petal</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                    </div>
                                 </div>
-                                <div class="review-stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                </div>
+                                <p class="review-text">People keep complimenting my tattoo. The artist knows exactly how to
+                                    make colors and lines pop. Super happy...</p>
                             </div>
-                            <p class="review-text">Very professional artist. Answered all my questions and made sure I
-                                was comfortable throughout...</p>
-                        </div>
 
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="review-user-info">
-                                    <img src="images/profile photos/User/UP_3.jpg" alt="midnightwandere..."
-                                        class="review-profile-pic">
-                                    <span class="review-username">midnightwandere...</span>
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="review-user-info">
+                                        <img src="images/profile photos/User/UP_2.jpg" alt="Electricvibesss77"
+                                            class="review-profile-pic">
+                                        <span class="review-username">Electricvibesss77</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                    </div>
                                 </div>
-                                <div class="review-stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star empty">★</span>
-                                </div>
+                                <p class="review-text">Very professional artist. Answered all my questions and made sure I
+                                    was comfortable throughout...</p>
                             </div>
-                            <p class="review-text">The tattoo looks amazing, but the session ran longer than expected.
-                                Still, totally worth it for the final piece!</p>
-                        </div>
 
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="review-user-info">
-                                    <img src="images/profile photos/User/UP_5.jpg" alt="thewanderingquill"
-                                        class="review-profile-pic">
-                                    <span class="review-username">thewanderingquill</span>
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="review-user-info">
+                                        <img src="images/profile photos/User/UP_3.jpg" alt="midnightwandere..."
+                                            class="review-profile-pic">
+                                        <span class="review-username">midnightwandere...</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star empty">★</span>
+                                    </div>
                                 </div>
-                                <div class="review-stars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                </div>
+                                <p class="review-text">The tattoo looks amazing, but the session ran longer than expected.
+                                    Still, totally worth it for the final piece!</p>
                             </div>
-                            <p class="review-text">Great experience from start to finish. The artist helped refine my
-                                idea and gave it the perfect flow on my arm.</p>
+
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="review-user-info">
+                                        <img src="images/profile photos/User/UP_5.jpg" alt="thewanderingquill"
+                                            class="review-profile-pic">
+                                        <span class="review-username">thewanderingquill</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                        <span class="star">★</span>
+                                    </div>
+                                </div>
+                                <p class="review-text">Great experience from start to finish. The artist helped refine my
+                                    idea and gave it the perfect flow on my arm.</p>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Portfolio Section -->
+            <div id="portfolio-section">
+                <div id="portfolio-header">
+                    <h2 id="portfolio-title">Portfolio</h2>
+                    <button id="edit-portfolio-btn" style="display: none;">Edit Portfolio</button>
+                </div>
+                <div id="portfolio-grid">
+                    <div class="portfolio-item ratio-1-1">
+                        <img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Portfolio 1">
+                    </div>
+                    <div class="portfolio-item ratio-2-3">
+                        <img src="images/tattoos/styles/Anime/Anime_girl.jpg" alt="Portfolio 2">
+                    </div>
+                    <div class="portfolio-item ratio-3-4">
+                        <img src="images/tattoos/styles/Japanese/japanese_2.jpg" alt="Portfolio 3">
+                    </div>
+                    <div class="portfolio-item ratio-1-1">
+                        <img src="images/tattoos/styles/Anime/Anime_sword.jpg" alt="Portfolio 4">
+                    </div>
+                    <div class="portfolio-item ratio-2-3">
+                        <img src="images/tattoos/styles/Japanese/japanese_3.jpg" alt="Portfolio 5">
+                    </div>
+                    <div class="portfolio-item ratio-3-4">
+                        <img src="images/tattoos/styles/Anime/anime_wolves.jpg" alt="Portfolio 6">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Portfolio Section -->
-        <div id="portfolio-section">
-            <div id="portfolio-header">
-                <h2 id="portfolio-title">Portfolio</h2>
-                <button id="edit-portfolio-btn" style="display: none;">Edit Portfolio</button>
-            </div>
-            <div id="portfolio-grid">
-                <div class="portfolio-item ratio-1-1">
-                    <img src="images/tattoos/styles/Japanese/japanese_1.jpg" alt="Portfolio 1">
-                </div>
-                <div class="portfolio-item ratio-2-3">
-                    <img src="images/tattoos/styles/Anime/Anime_girl.jpg" alt="Portfolio 2">
-                </div>
-                <div class="portfolio-item ratio-3-4">
-                    <img src="images/tattoos/styles/Japanese/japanese_2.jpg" alt="Portfolio 3">
-                </div>
-                <div class="portfolio-item ratio-1-1">
-                    <img src="images/tattoos/styles/Anime/Anime_sword.jpg" alt="Portfolio 4">
-                </div>
-                <div class="portfolio-item ratio-2-3">
-                    <img src="images/tattoos/styles/Japanese/japanese_3.jpg" alt="Portfolio 5">
-                </div>
-                <div class="portfolio-item ratio-3-4">
-                    <img src="images/tattoos/styles/Anime/anime_wolves.jpg" alt="Portfolio 6">
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- Portfolio Edit Overlay -->
+        <div id="portfolio-overlay" class="overlay">
+            <div id="portfolio-modal">
+                <img src="images/favicons/cancel.png" id="close-portfolio-modal" class="close-btn" alt="Close">
+                <h2>Edit Portfolio</h2>
 
-    <!-- Portfolio Edit Overlay -->
-    <div id="portfolio-overlay" class="overlay">
-        <div id="portfolio-modal">
-            <img src="images/favicons/cancel.png" id="close-portfolio-modal" class="close-btn" alt="Close">
-            <h2>Edit Portfolio</h2>
-
-            <div id="image-upload-area">
-                <div id="drop-zone">
-                    <p>Browse or drop images here</p>
-                    <input type="file" id="file-input" accept="image/*" multiple>
-                </div>
-            </div>
-
-            <form id="portfolio-form">
-                <label for="image-title">Title</label>
-                <input type="text" id="image-title" name="title" placeholder="Enter image title">
-
-                <label for="image-description">Description</label>
-                <textarea id="image-description" name="description" rows="4"
-                    placeholder="Enter image description"></textarea>
-
-                <label for="image-tags">Tags</label>
-                <input type="text" id="image-tags" name="tags" placeholder="Enter tags (comma separated)">
-
-                <button type="submit" id="upload-portfolio-btn">Upload Image to Portfolio</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Review Artist Overlay -->
-    <div id="review-overlay" class="overlay">
-        <div id="review-modal">
-            <img src="images/favicons/cancel.png" id="close-review-modal" class="close-btn" alt="Close">
-            <h2 style="font-family: 'BBH Hegarty', sans-serif; text-align: left; font-weight: normal;">Review Artist
-            </h2>
-
-            <div id="review-form-content">
-                <div id="star-rating-container">
-                    <div class="star-rating">
-                        <span class="rating-star" data-value="1">★</span>
-                        <span class="rating-star" data-value="2">★</span>
-                        <span class="rating-star" data-value="3">★</span>
-                        <span class="rating-star" data-value="4">★</span>
-                        <span class="rating-star" data-value="5">★</span>
+                <div id="image-upload-area">
+                    <div id="drop-zone">
+                        <p>Browse or drop images here</p>
+                        <input type="file" id="file-input" accept="image/*" multiple>
                     </div>
                 </div>
 
-                <div id="review-text-container">
-                    <textarea id="review-text-input" placeholder="Add review..." rows="6"></textarea>
-                </div>
+                <form id="portfolio-form">
+                    <label for="image-title">Title</label>
+                    <input type="text" id="image-title" name="title" placeholder="Enter image title">
 
-                <button id="submit-review-btn" class="review-submit-btn">Review Artist</button>
+                    <label for="image-description">Description</label>
+                    <textarea id="image-description" name="description" rows="4"
+                        placeholder="Enter image description"></textarea>
+
+                    <label for="image-tags">Tags</label>
+                    <input type="text" id="image-tags" name="tags" placeholder="Enter tags (comma separated)">
+
+                    <button type="submit" id="upload-portfolio-btn">Upload Image to Portfolio</button>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- Footer Section -->
-    <div id="footer-placeholder"></div>
+        <!-- Review Artist Overlay -->
+        <div id="review-overlay" class="overlay">
+            <div id="review-modal">
+                <img src="images/favicons/cancel.png" id="close-review-modal" class="close-btn" alt="Close">
+                <h2 style="font-family: 'BBH Hegarty', sans-serif; text-align: left; font-weight: normal;">Review Artist
+                </h2>
+
+                <div id="review-form-content">
+                    <div id="star-rating-container">
+                        <div class="star-rating">
+                            <span class="rating-star" data-value="1">★</span>
+                            <span class="rating-star" data-value="2">★</span>
+                            <span class="rating-star" data-value="3">★</span>
+                            <span class="rating-star" data-value="4">★</span>
+                            <span class="rating-star" data-value="5">★</span>
+                        </div>
+                    </div>
+
+                    <div id="review-text-container">
+                        <textarea id="review-text-input" placeholder="Add review..." rows="6"></textarea>
+                    </div>
+
+                    <button id="submit-review-btn" class="review-submit-btn">Review Artist</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div id="footer-placeholder"></div>
 </body>
 
 </html>

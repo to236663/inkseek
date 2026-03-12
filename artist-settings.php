@@ -2,6 +2,12 @@
 require 'connect.php';
 session_start();
 
+// Redirect to login if not authenticated
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit();
+}
+
 $account_id = $_SESSION['logged_in_account_id'];
 $schedule = [];
 $success = false;
@@ -30,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['availability_status'] ?? 'available';
 
     // Build the UPDATE query dynamically
-    $stmt = $mysqli->prepare("UPDATE artist_profiles SET 
+    $stmt = $mysqli->prepare("UPDATE artist_profiles SET
         availability_status = ?,
         mon_start = ?, mon_end = ?,
         tue_start = ?, tue_end = ?,
@@ -57,15 +63,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sun_start = !empty($_POST['sun_active']) ? $_POST['sun_start'] : null;
     $sun_end   = !empty($_POST['sun_active']) ? $_POST['sun_end']   : null;
 
-    $stmt->bind_param("ssssssssssssssi",
+    $stmt->bind_param(
+        "ssssssssssssssi",
         $status,
-        $mon_start, $mon_end,
-        $tue_start, $tue_end,
-        $wed_start, $wed_end,
-        $thu_start, $thu_end,
-        $fri_start, $fri_end,
-        $sat_start, $sat_end,
-        $sun_start, $sun_end,
+        $mon_start,
+        $mon_end,
+        $tue_start,
+        $tue_end,
+        $wed_start,
+        $wed_end,
+        $thu_start,
+        $thu_end,
+        $fri_start,
+        $fri_end,
+        $sat_start,
+        $sat_end,
+        $sun_start,
+        $sun_end,
         $profile_id
     );
     $stmt->execute();
@@ -78,10 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (!empty($_POST['address'])) {
     if ($map_row) {
         // Update existing location
-        $map_update = $mysqli->prepare("UPDATE map_data SET 
+        $map_update = $mysqli->prepare("UPDATE map_data SET
             address = ?, city = ?, state = ?, postal_code = ?, updated_at = NOW()
             WHERE artist_profile_id = ?");
-        $map_update->bind_param("ssssi",
+        $map_update->bind_param(
+            "ssssi",
             $_POST['address'],
             $_POST['city'],
             $_POST['state'],
@@ -92,10 +107,11 @@ if (!empty($_POST['address'])) {
         $map_update->close();
     } else {
         // Insert new location
-        $map_insert = $mysqli->prepare("INSERT INTO map_data 
-            (artist_profile_id, address, city, state, postal_code, created_at, updated_at) 
+        $map_insert = $mysqli->prepare("INSERT INTO map_data
+            (artist_profile_id, address, city, state, postal_code, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
-        $map_insert->bind_param("issss",
+        $map_insert->bind_param(
+            "issss",
             $profile_id,
             $_POST['address'],
             $_POST['city'],
@@ -108,7 +124,7 @@ if (!empty($_POST['address'])) {
 }
 
 // Load existing schedule
-$stmt = $mysqli->prepare("SELECT 
+$stmt = $mysqli->prepare("SELECT
     availability_status,
     mon_start, mon_end,
     tue_start, tue_end,
@@ -170,192 +186,193 @@ foreach ($days as $day) {
             </div>
 
             <!-- Edit Form -->
-<div id="settings-form">
-    <form method="POST" action="artist-settings.php">
+            <div id="settings-form">
+                <form method="POST" action="artist-settings.php">
 
-        <?php if ($success): ?>
-            <p class="success-msg">Changes saved successfully!</p>
-        <?php endif; ?>
+                    <?php if ($success): ?>
+                        <p class="success-msg">Changes saved successfully!</p>
+                    <?php endif; ?>
 
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Enter your name" value="Naomi Sinclair">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" value="Naomi Sinclair">
 
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" value="SilverSpire_Ink">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" value="SilverSpire_Ink">
 
-        <label for="about">About</label>
-        <textarea id="about" name="about" rows="5" placeholder="Tell us about yourself">Specializing in neo-traditional and illustrative tattoos with a focus on nature-inspired designs. 10+ years of experience creating custom pieces that tell your story.</textarea>
+                    <label for="about">About</label>
+                    <textarea id="about" name="about" rows="5" placeholder="Tell us about yourself">Specializing in neo-traditional and illustrative tattoos with a focus on nature-inspired designs. 10+ years of experience creating custom pieces that tell your story.</textarea>
 
-        <!-- Availability -->
-        <div id="availability-section">
-            <label for="availability-status">Availability Status</label>
-            <select id="availability-status" name="availability_status">
-                <option value="available"   <?= $availability_status === 'available'   ? 'selected' : '' ?>>Available</option>
-                <option value="limited"     <?= $availability_status === 'limited'     ? 'selected' : '' ?>>Limited Availability</option>
-                <option value="booked"      <?= $availability_status === 'booked'      ? 'selected' : '' ?>>Fully Booked</option>
-                <option value="unavailable" <?= $availability_status === 'unavailable' ? 'selected' : '' ?>>Not Taking Clients</option>
-            </select>
+                    <!-- Availability -->
+                    <div id="availability-section">
+                        <label for="availability-status">Availability Status</label>
+                        <select id="availability-status" name="availability_status">
+                            <option value="available" <?= $availability_status === 'available'   ? 'selected' : '' ?>>Available</option>
+                            <option value="limited" <?= $availability_status === 'limited'     ? 'selected' : '' ?>>Limited Availability</option>
+                            <option value="booked" <?= $availability_status === 'booked'      ? 'selected' : '' ?>>Fully Booked</option>
+                            <option value="unavailable" <?= $availability_status === 'unavailable' ? 'selected' : '' ?>>Not Taking Clients</option>
+                        </select>
 
-            <div id="weekly-schedule">
-                <h3>Weekly Hours</h3>
-                <div class="schedule-grid">
+                        <div id="weekly-schedule">
+                            <h3>Weekly Hours</h3>
+                            <div class="schedule-grid">
 
-                    <div class="schedule-row <?= empty($schedule['mon']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="mon-active" name="mon_active" <?= !empty($schedule['mon']) ? 'checked' : '' ?>>
-                            <label for="mon-active">Monday</label>
+                                <div class="schedule-row <?= empty($schedule['mon']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="mon-active" name="mon_active" <?= !empty($schedule['mon']) ? 'checked' : '' ?>>
+                                        <label for="mon-active">Monday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="mon-start" name="mon_start" value="<?= $schedule['mon']['start'] ?? '' ?>" <?= empty($schedule['mon']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="mon-end" name="mon_end" value="<?= $schedule['mon']['end'] ?? '' ?>" <?= empty($schedule['mon']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['tue']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="tue-active" name="tue_active" <?= !empty($schedule['tue']) ? 'checked' : '' ?>>
+                                        <label for="tue-active">Tuesday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="tue-start" name="tue_start" value="<?= $schedule['tue']['start'] ?? '' ?>" <?= empty($schedule['tue']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="tue-end" name="tue_end" value="<?= $schedule['tue']['end'] ?? '' ?>" <?= empty($schedule['tue']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['wed']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="wed-active" name="wed_active" <?= !empty($schedule['wed']) ? 'checked' : '' ?>>
+                                        <label for="wed-active">Wednesday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="wed-start" name="wed_start" value="<?= $schedule['wed']['start'] ?? '' ?>" <?= empty($schedule['wed']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="wed-end" name="wed_end" value="<?= $schedule['wed']['end'] ?? '' ?>" <?= empty($schedule['wed']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['thu']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="thu-active" name="thu_active" <?= !empty($schedule['thu']) ? 'checked' : '' ?>>
+                                        <label for="thu-active">Thursday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="thu-start" name="thu_start" value="<?= $schedule['thu']['start'] ?? '' ?>" <?= empty($schedule['thu']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="thu-end" name="thu_end" value="<?= $schedule['thu']['end'] ?? '' ?>" <?= empty($schedule['thu']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['fri']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="fri-active" name="fri_active" <?= !empty($schedule['fri']) ? 'checked' : '' ?>>
+                                        <label for="fri-active">Friday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="fri-start" name="fri_start" value="<?= $schedule['fri']['start'] ?? '' ?>" <?= empty($schedule['fri']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="fri-end" name="fri_end" value="<?= $schedule['fri']['end'] ?? '' ?>" <?= empty($schedule['fri']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['sat']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="sat-active" name="sat_active" <?= !empty($schedule['sat']) ? 'checked' : '' ?>>
+                                        <label for="sat-active">Saturday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="sat-start" name="sat_start" value="<?= $schedule['sat']['start'] ?? '' ?>" <?= empty($schedule['sat']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="sat-end" name="sat_end" value="<?= $schedule['sat']['end'] ?? '' ?>" <?= empty($schedule['sat']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                                <div class="schedule-row <?= empty($schedule['sun']) ? 'closed' : '' ?>">
+                                    <div class="day-toggle">
+                                        <input type="checkbox" id="sun-active" name="sun_active" <?= !empty($schedule['sun']) ? 'checked' : '' ?>>
+                                        <label for="sun-active">Sunday</label>
+                                    </div>
+                                    <div class="time-inputs">
+                                        <input type="time" id="sun-start" name="sun_start" value="<?= $schedule['sun']['start'] ?? '' ?>" <?= empty($schedule['sun']) ? 'disabled' : '' ?>>
+                                        <span class="time-separator">-</span>
+                                        <input type="time" id="sun-end" name="sun_end" value="<?= $schedule['sun']['end'] ?? '' ?>" <?= empty($schedule['sun']) ? 'disabled' : '' ?>>
+                                    </div>
+                                    <span class="closed-label">Closed</span>
+                                </div>
+
+                            </div>
                         </div>
-                        <div class="time-inputs">
-                            <input type="time" id="mon-start" name="mon_start" value="<?= $schedule['mon']['start'] ?? '' ?>" <?= empty($schedule['mon']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="mon-end" name="mon_end" value="<?= $schedule['mon']['end'] ?? '' ?>" <?= empty($schedule['mon']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
                     </div>
 
-                    <div class="schedule-row <?= empty($schedule['tue']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="tue-active" name="tue_active" <?= !empty($schedule['tue']) ? 'checked' : '' ?>>
-                            <label for="tue-active">Tuesday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="tue-start" name="tue_start" value="<?= $schedule['tue']['start'] ?? '' ?>" <?= empty($schedule['tue']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="tue-end" name="tue_end" value="<?= $schedule['tue']['end'] ?? '' ?>" <?= empty($schedule['tue']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
+                    <!-- Location Section -->
+                    <div id="location-section">
+                        <h3>Studio Location</h3>
+
+                        <label for="address">Street Address</label>
+                        <input type="text" id="address" name="address"
+                            placeholder="Enter your studio address"
+                            value="<?= e($map_row['address'] ?? '') ?>">
+
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city"
+                            placeholder="Enter your city"
+                            value="<?= e($map_row['city'] ?? '') ?>">
+
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state"
+                            placeholder="Enter your state"
+                            value="<?= e($map_row['state'] ?? '') ?>">
+
+                        <label for="postal_code">Postal Code</label>
+                        <input type="text" id="postal_code" name="postal_code"
+                            placeholder="Enter your postal code"
+                            value="<?= e($map_row['postal_code'] ?? '') ?>">
                     </div>
 
-                    <div class="schedule-row <?= empty($schedule['wed']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="wed-active" name="wed_active" <?= !empty($schedule['wed']) ? 'checked' : '' ?>>
-                            <label for="wed-active">Wednesday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="wed-start" name="wed_start" value="<?= $schedule['wed']['start'] ?? '' ?>" <?= empty($schedule['wed']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="wed-end" name="wed_end" value="<?= $schedule['wed']['end'] ?? '' ?>" <?= empty($schedule['wed']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
-                    </div>
+                    <button type="button" id="edit-portfolio-btn">Edit Portfolio</button>
+                    <button type="submit" id="save-changes-btn">Save Changes</button>
 
-                    <div class="schedule-row <?= empty($schedule['thu']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="thu-active" name="thu_active" <?= !empty($schedule['thu']) ? 'checked' : '' ?>>
-                            <label for="thu-active">Thursday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="thu-start" name="thu_start" value="<?= $schedule['thu']['start'] ?? '' ?>" <?= empty($schedule['thu']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="thu-end" name="thu_end" value="<?= $schedule['thu']['end'] ?? '' ?>" <?= empty($schedule['thu']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
-                    </div>
-
-                    <div class="schedule-row <?= empty($schedule['fri']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="fri-active" name="fri_active" <?= !empty($schedule['fri']) ? 'checked' : '' ?>>
-                            <label for="fri-active">Friday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="fri-start" name="fri_start" value="<?= $schedule['fri']['start'] ?? '' ?>" <?= empty($schedule['fri']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="fri-end" name="fri_end" value="<?= $schedule['fri']['end'] ?? '' ?>" <?= empty($schedule['fri']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
-                    </div>
-
-                    <div class="schedule-row <?= empty($schedule['sat']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="sat-active" name="sat_active" <?= !empty($schedule['sat']) ? 'checked' : '' ?>>
-                            <label for="sat-active">Saturday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="sat-start" name="sat_start" value="<?= $schedule['sat']['start'] ?? '' ?>" <?= empty($schedule['sat']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="sat-end" name="sat_end" value="<?= $schedule['sat']['end'] ?? '' ?>" <?= empty($schedule['sat']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
-                    </div>
-
-                    <div class="schedule-row <?= empty($schedule['sun']) ? 'closed' : '' ?>">
-                        <div class="day-toggle">
-                            <input type="checkbox" id="sun-active" name="sun_active" <?= !empty($schedule['sun']) ? 'checked' : '' ?>>
-                            <label for="sun-active">Sunday</label>
-                        </div>
-                        <div class="time-inputs">
-                            <input type="time" id="sun-start" name="sun_start" value="<?= $schedule['sun']['start'] ?? '' ?>" <?= empty($schedule['sun']) ? 'disabled' : '' ?>>
-                            <span class="time-separator">-</span>
-                            <input type="time" id="sun-end" name="sun_end" value="<?= $schedule['sun']['end'] ?? '' ?>" <?= empty($schedule['sun']) ? 'disabled' : '' ?>>
-                        </div>
-                        <span class="closed-label">Closed</span>
-                    </div>
-
-                </div>
+                </form>
             </div>
-        </div>
-
-        <!-- Location Section -->
-<div id="location-section">
-    <h3>Studio Location</h3>
-
-    <label for="address">Street Address</label>
-    <input type="text" id="address" name="address" 
-        placeholder="Enter your studio address" 
-        value="<?= e($map_row['address'] ?? '') ?>">
-
-    <label for="city">City</label>
-    <input type="text" id="city" name="city" 
-        placeholder="Enter your city" 
-        value="<?= e($map_row['city'] ?? '') ?>">
-
-    <label for="state">State</label>
-    <input type="text" id="state" name="state" 
-        placeholder="Enter your state" 
-        value="<?= e($map_row['state'] ?? '') ?>">
-
-    <label for="postal_code">Postal Code</label>
-    <input type="text" id="postal_code" name="postal_code" 
-        placeholder="Enter your postal code" 
-        value="<?= e($map_row['postal_code'] ?? '') ?>">
-</div>
-
-        <button type="button" id="edit-portfolio-btn">Edit Portfolio</button>
-        <button type="submit" id="save-changes-btn">Save Changes</button>
-
-    </form>
-</div>
 
 
-<!-- Account Actions -->
-<div id="account-actions">
-    <a href="user-settings.html" class="action-link">Convert to User Account</a>
-    <a href="#" class="action-link">Delete Account</a>
-</div>
+            <!-- Account Actions -->
+            <div id="account-actions">
+                <a href="user-settings.html" class="action-link">Convert to User Account</a>
+                <a href="#" class="action-link">Delete Account</a>
+            </div>
 
-</div><!-- end settings-column -->
-</div><!-- end settings-container -->
+        </div><!-- end settings-column -->
+    </div><!-- end settings-container -->
 
-<!-- Footer -->
-<div id="footer-placeholder"></div>
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
 
-<script>
-    document.querySelectorAll('.schedule-row input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-            const row = this.closest('.schedule-row');
-            const timeInputs = row.querySelectorAll('input[type="time"]');
-            if (this.checked) {
-                row.classList.remove('closed');
-                timeInputs.forEach(input => input.disabled = false);
-            } else {
-                row.classList.add('closed');
-                timeInputs.forEach(input => input.disabled = true);
-            }
+    <script>
+        document.querySelectorAll('.schedule-row input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('.schedule-row');
+                const timeInputs = row.querySelectorAll('input[type="time"]');
+                if (this.checked) {
+                    row.classList.remove('closed');
+                    timeInputs.forEach(input => input.disabled = false);
+                } else {
+                    row.classList.add('closed');
+                    timeInputs.forEach(input => input.disabled = true);
+                }
+            });
         });
-    });
-</script>
+    </script>
 
 </body>
+
 </html>
 
 <?php $mysqli->close(); ?>

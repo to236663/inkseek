@@ -6,8 +6,8 @@ ini_set('display_errors', 1);
 // Start the session so we can store and access session variables like $_SESSION['logged_in']
 session_start();
 
-// Include the database connection file which creates the $mysqli connection object
-require("connect.php");
+// Include the shared database connection file.
+require_once __DIR__ . '/connect.php';
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -103,14 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Redirect the user to discover page (update this to php eventually)
-            header("Location: discover.html");
+            // Redirect logged-in users to the DB-backed discover page.
+            header("Location: discover.php");
 
             // Stop the rest of the PHP script from running after the redirect
             exit();
         } else {
 
-            // If the username was not found or the password hash did not match, set an error message
+            // If username or password does not match, show an error message.
             $error = "Invalid username or password.";
         }
     }

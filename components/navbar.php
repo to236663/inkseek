@@ -1,66 +1,118 @@
-<?php session_start(); ?>
+<?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+$defaultProfileImage = '/images/profile photos/User/UP_4.jpg';
+$navProfileImage = $defaultProfileImage;
+$navUsername = (string)($_SESSION['logged_in_username'] ?? 'username');
+$navAccessLevel = (string)($_SESSION['logged_in_access_level'] ?? 'user');
+$artistProfileId = isset($_SESSION['artist_profile_id']) ? (int)$_SESSION['artist_profile_id'] : 0;
+$loggedInAccountId = isset($_SESSION['logged_in_account_id']) ? (int)$_SESSION['logged_in_account_id'] : 0;
+
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && $loggedInAccountId > 0) {
+    require_once __DIR__ . '/../connect.php';
+
+    if (isset($mysqli) && $mysqli instanceof mysqli) {
+        $accountStmt = $mysqli->prepare('SELECT username, role, profile_image_path FROM accounts WHERE account_id = ? LIMIT 1');
+
+        if ($accountStmt) {
+            $accountStmt->bind_param('i', $loggedInAccountId);
+            $accountStmt->execute();
+            $accountResult = $accountStmt->get_result();
+            $accountRow = $accountResult ? $accountResult->fetch_assoc() : null;
+            $accountStmt->close();
+
+            if ($accountRow) {
+                $_SESSION['logged_in_username'] = (string)$accountRow['username'];
+                $_SESSION['logged_in_access_level'] = (string)$accountRow['role'];
+                $_SESSION['logged_in_profile_image'] = (string)($accountRow['profile_image_path'] ?? '');
+
+                $navUsername = (string)$accountRow['username'];
+                $navAccessLevel = (string)$accountRow['role'];
+            }
+        }
+
+        if ($navAccessLevel === 'artist' && $artistProfileId <= 0) {
+            $profileStmt = $mysqli->prepare('SELECT profile_id FROM artist_profiles WHERE account_id = ? LIMIT 1');
+
+            if ($profileStmt) {
+                $profileStmt->bind_param('i', $loggedInAccountId);
+                $profileStmt->execute();
+                $profileResult = $profileStmt->get_result();
+                $profileRow = $profileResult ? $profileResult->fetch_assoc() : null;
+                $profileStmt->close();
+
+                if ($profileRow) {
+                    $artistProfileId = (int)$profileRow['profile_id'];
+                    $_SESSION['artist_profile_id'] = $artistProfileId;
+                }
+            }
+        }
+
+        $mysqli->close();
+    }
+}
+
+$sessionProfileImage = trim((string)($_SESSION['logged_in_profile_image'] ?? ''));
+if ($sessionProfileImage !== '') {
+    $navProfileImage = $sessionProfileImage;
+}
+
+$profileHref = 'user-profile.php';
+if ($navAccessLevel === 'artist' && $artistProfileId > 0) {
+    $profileHref = 'artist-profile.php?profile_id=' . $artistProfileId;
+} elseif ($loggedInAccountId > 0) {
+    $profileHref = 'user-profile.php?account_id=' . $loggedInAccountId;
+}
+?>
 <div id="navbar">
-    <a id="logo-link" href="/index.html">
-        <img id="bottle-logo" src="/images/logos/inkseeklogomain.png" alt="ink bottle dripping">
+    <a id="logo-link" href="index.html">
+        <img id="bottle-logo" src="images/logos/inkseeklogomain.png" alt="ink bottle dripping">
     </a>
     <div id="center-buttons">
         <div id="center-buttons-group">
-            <a class="navbutton" href="/discover.html">Discover</a>
-            <a class="navbutton" href="/about-us.html">About Us</a>
-            <a class="navbutton" href="/guides.html">Guides</a>
+            <a class="navbutton" id="discover-button" href="discover.php">Discover</a>
+            <a class="navbutton" id="about-us-button" href="about-us.html">About Us</a>
+            <a class="navbutton" id="guides-button" href="guides.html">Guides</a>
         </div>
     </div>
     <div id="right-buttons">
 
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-            <!-- LOGGED IN -->
-            <div id="logged-in-profile" class="right-buttons-group">
+            <div id="logged-in-profile" class="right-buttons-group" style="display: flex;">
                 <div class="profile-container">
                     <div class="profile-dropdown" onclick="toggleDropdown();">
-
-                        <!-- Link changes based on account type -->
-                        <?php if ($_SESSION['logged_in_access_level'] === 'artist'): ?>
-                            <a id="profile-link" href="/artist-profile.php?profile_id=<?= $_SESSION['artist_profile_id'] ?>">
-                        <?php else: ?>
-                            <a id="profile-link" href="/user-profile.php?account_id=<?= $_SESSION['logged_in_account_id'] ?>">
-                        <?php endif; ?>
+                        <a id="profile-link" href="<?= htmlspecialchars($profileHref, ENT_QUOTES, 'UTF-8') ?>">
                             <img id="nav-profile-pic" class="nav-profile-pic"
-                                src="<?= $_SESSION['logged_in_profile_image'] ?? '/images/profile photos/User/UP_4.jpg' ?>"
+                                src="<?= htmlspecialchars($navProfileImage, ENT_QUOTES, 'UTF-8') ?>"
                                 alt="Profile">
-                            </a>
-
+                        </a>
                         <div class="dropdown-arrow"></div>
                     </div>
 
                     <div id="dropdown-menu" class="dropdown-menu">
                         <div class="dropdown-header">
-                            <p id="dropdown-username">@<?= htmlspecialchars($_SESSION['logged_in_username']) ?></p>
-                            <p id="dropdown-account-type">
-                                <?= $_SESSION['logged_in_access_level'] === 'artist' ? 'Artist Account' : 'Personal Account' ?>
+                            <p id="dropdown-username" class="dropdown-username">@<?= htmlspecialchars($navUsername, ENT_QUOTES, 'UTF-8') ?></p>
+                            <p id="dropdown-account-type" class="dropdown-account-type">
+                                <?= $navAccessLevel === 'artist' ? 'Artist Account' : 'Personal Account' ?>
                             </p>
                         </div>
 
-                        <!-- Only show convert button if not already an artist -->
-                        <?php if ($_SESSION['logged_in_access_level'] !== 'artist'): ?>
-                            <button class="convert-btn" onclick="convertAccount()">
-                                Convert to Artist Account
-                            </button>
-                        <?php endif; ?>
-
-                        <a href="/artist-settings.php" class="dropdown-item">
-                            <img src="/images/favicons/settings.png" class="dropdown-icon-img" alt="Settings">
+                        <a href="artist-settings.php" class="dropdown-item">
+                            <img src="images/favicons/settings.png" class="dropdown-icon-img" alt="Settings">
                             <span>Account Settings</span>
                         </a>
-                        <a href="/messages.html" class="dropdown-item">
-                            <img src="/images/favicons/messages.png" class="dropdown-icon-img" alt="Messages">
+                        <a href="messages.php" class="dropdown-item">
+                            <img src="images/favicons/messages.png" class="dropdown-icon-img" alt="Messages">
                             <span>Messages</span>
                         </a>
-                        <a href="/discover.html" class="dropdown-item">
-                            <img src="/images/favicons/search.png" class="dropdown-icon-img" alt="Search">
+                        <a href="discover.php" class="dropdown-item">
+                            <img src="images/favicons/search.png" class="dropdown-icon-img" alt="Search">
                             <span>Search</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="/logout.php" class="dropdown-item">
+                        <a href="logout.php" class="dropdown-item">
                             <span>Log Out</span>
                         </a>
                     </div>
@@ -68,65 +120,11 @@
             </div>
 
         <?php else: ?>
-            <!-- LOGGED OUT -->
             <div id="logged-out-buttons" class="right-buttons-group">
-                <a class="navbutton" href="/login.php">Log In</a>
-                <a class="navbutton" href="/create-account.php">Create Account</a>
+                <a class="navbutton" id="login" href="login.php">Log In</a>
+                <a class="navbutton" id="create-account" href="create-account.php">Create Account</a>
             </div>
         <?php endif; ?>
 
-    </div>
-</div>
-<div id="navbar">
-    <a id="logo-link" href="index.html">
-        <img id="bottle-logo" src="images/logos/inkseeklogomain.png" alt="ink bottle dripping">
-    </a>
-    <div id="center-buttons">
-        <div id="center-buttons-group">
-            <a class="navbutton" id="discover-button" href="discover.html">Discover</a>
-            <a class="navbutton" id="about-us-button" href="about-us.html">About Us</a>
-            <a class="navbutton" id="guides-button" href="guides.html">Guides</a>
-        </div>
-    </div>
-    <div id="right-buttons">
-        <div id="logged-out-buttons" class="right-buttons-group">
-            <a class="navbutton" id="login" href="/login.php">Log In</a>
-            <a class="navbutton" id="create-account" href="/create-account.php">Create Account</a>
-        </div>
-        <div id="logged-in-profile" class="right-buttons-group" style="display: none;">
-            <div class="profile-container">
-                <div class="profile-dropdown" onclick="toggleDropdown();">
-                    <a id="profile-link" href="user-profile.html">
-                        <img id="nav-profile-pic" class="nav-profile-pic" src="images/profile photos/User/UP_4.jpg"
-                            alt="Profile">
-                    </a>
-                    <div class="dropdown-arrow"></div>
-                </div>
-                <div id="dropdown-menu" class="dropdown-menu">
-                    <div class="dropdown-header">
-                        <p id="dropdown-username" class="dropdown-username">@username</p>
-                        <p id="dropdown-account-type" class="dropdown-account-type">Personal Account</p>
-                    </div>
-                    <button class="convert-btn" id="convert-account-btn" onclick="convertAccount()">Convert to Artist
-                        Account</button>
-                    <a href="#" class="dropdown-item">
-                        <img src="images/favicons/settings.png" class="dropdown-icon-img" alt="Settings">
-                        <span>Account Settings</span>
-                    </a>
-                    <a href="messages.html" class="dropdown-item">
-                        <img src="images/favicons/messages.png" class="dropdown-icon-img" alt="Messages">
-                        <span>Messages</span>
-                    </a>
-                    <a href="discover.html" class="dropdown-item">
-                        <img src="images/favicons/search.png" class="dropdown-icon-img" alt="Search">
-                        <span>Search</span>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item" onclick="logout(); return false;">
-                        <span>Log Out</span>
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
