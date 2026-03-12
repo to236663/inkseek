@@ -231,6 +231,7 @@
     border-radius: 8px;
     padding: 60px 20px;
     text-align: center;
+    height: 180px; 
 }
 
 #map-placeholder p {

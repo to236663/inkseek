@@ -15,7 +15,7 @@ async function loadComponents() {
     // Add loading class to body
     document.body.classList.add('loading');
 
-    await loadComponent('navbar-placeholder', 'components/navbar.html');
+    await loadComponent('navbar-placeholder', 'components/navbar.php');
     await loadComponent('footer-placeholder', 'components/footer.html');
 
     // After loading navbar, check login state

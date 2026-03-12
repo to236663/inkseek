@@ -1,9 +1,32 @@
-version: "3.8"
 services:
   web:
     build: .
     ports:
       - "3000:80"
     volumes:
-      - .:/usr/share/nginx/html:ro
+      - .:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - db
     restart: unless-stopped
+    networks:
+      - inkseek-network
+
+  db:
+    image: mysql:8.0
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d 
+    restart: unless-stopped
+    networks:
+      - inkseek-network
+
+volumes:
+  db_data:
+
+networks:
+  inkseek-network:
+    driver: bridge

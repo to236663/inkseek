@@ -18,7 +18,7 @@ function checkLoginState() {
         // Set profile picture and link based on user type
         if (userType === 'artist') {
             profilePic.src = 'images/profile photos/Artist/Profile_1.jpg';
-            profileLink.href = 'artist-profile.html';
+            profileLink.href = 'artist-profile.php';
             if (dropdownAccountType) dropdownAccountType.textContent = 'Artist Account';
             if (convertBtn) {
                 convertBtn.style.display = 'block';
@@ -89,7 +89,7 @@ function convertAccount() {
         // Convert to artist
         sessionStorage.setItem('userType', 'artist');
         sessionStorage.setItem('username', '@SilverSpire_Ink');
-        window.location.href = 'artist-profile.html';
+        window.location.href = 'artist-profile.php';
     } else {
         // Convert to user
         sessionStorage.setItem('userType', 'user');
@@ -101,7 +101,7 @@ function convertAccount() {
 // Initialize page-specific features
 function initializePageFeatures() {
     // Artist profile page - show Edit Profile if artist is viewing their own profile
-    if (window.location.pathname.includes('artist-profile.html')) {
+    if (window.location.pathname.includes('artist-profile.php')) {
         const userType = sessionStorage.getItem('userType') || 'user';
         const followBtn = document.getElementById('follow-btn');
         const editProfileBtn = document.getElementById('edit-profile-btn');
@@ -148,7 +148,7 @@ function initializePageFeatures() {
     }
 
     // Portfolio edit overlay functionality
-    if (window.location.pathname.includes('artist-profile.html')) {
+    if (window.location.pathname.includes('artist-profile.php')) {
         const editPortfolioBtn = document.getElementById('edit-portfolio-btn');
         const portfolioOverlay = document.getElementById('portfolio-overlay');
         const closeModalBtn = document.getElementById('close-portfolio-modal');
@@ -301,7 +301,7 @@ function handleLogin() {
     setLoginState(userType, formattedUsername);
 
     if (userType === 'artist') {
-        window.location.href = 'artist-profile.html';
+        window.location.href = 'artist-profile.php';
     } else {
         window.location.href = 'user-profile.html';
     }

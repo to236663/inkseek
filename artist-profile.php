@@ -1,3 +1,21 @@
+<?php
+require 'connect.php';
+session_start();
+
+// Get artist profile_id from URL parameter
+$profile_id = $_GET['profile_id'] ?? null;
+
+// Get map data for this artist
+$map_data = null;
+if ($profile_id) {
+    $stmt = $mysqli->prepare("SELECT * FROM map_data WHERE artist_profile_id = ?");
+    $stmt->bind_param("i", $profile_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $map_data = $result->fetch_assoc();
+    $stmt->close();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,6 +26,8 @@
     <link rel="icon" href="images/logos/inkseeklogosimple.png" type="image/png" sizes="16x16">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/artist-profile.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="scripts/components.js"></script>
     <script src="scripts/auth.js"></script>
 </head>
@@ -65,7 +85,7 @@
                 <div id="action-buttons">
                     <button class="action-btn" id="follow-btn" style="display: none;">Follow</button>
                     <button class="action-btn" id="edit-profile-btn" style="display: none;"
-                        onclick="window.location.href='artist-settings.html'">Edit Profile</button>
+                        onclick="window.location.href='artist-settings.php'">Edit Profile</button>
                     <button class="action-btn" id="message-btn"
                         onclick="window.location.href='messages.html'">Message</button>
                 </div>
@@ -87,7 +107,7 @@
                 </div>
             </div>
 
-            <!-- Weekly Availability Section -->
+            <!-- Weekly Availability Section (change this to display actual availability)-->
             <div class="info-section">
                 <div class="section-header">
                     <h3>Weekly Availability</h3>
@@ -103,13 +123,62 @@
             <div class="info-section">
                 <div class="section-header">
                     <h3>Location</h3>
-                </div>
                 <div class="section-content">
-                    <div id="map-placeholder">
-                        <p>Map Placeholder</p>
-                    </div>
-                </div>
-            </div>
+        <?php if ($map_data): ?>
+            <!-- Show address text -->
+            <p id="artist-address">
+                <?= e($map_data['address']) ?>, 
+                <?= e($map_data['city']) ?>, 
+                <?= e($map_data['state']) ?> 
+                <?= e($map_data['postal_code']) ?>
+            </p>
+            <!-- Map container -->
+            <div id="artist-map" style="height: 300px; width: 100%; border-radius: 8px;"></div>
+
+            <script>
+                // Build full address string for geocoding
+                const address = "<?= e($map_data['address']) ?>, <?= e($map_data['city']) ?>, <?= e($map_data['state']) ?> <?= e($map_data['postal_code']) ?>";
+
+                // Geocode address using OpenStreetMap Nominatim
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+
+                            // Initialize Leaflet map
+                            const map = L.map('artist-map').setView([lat, lon], 15);
+
+                            // Add OpenStreetMap tiles
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            }).addTo(map);
+
+                            // Add marker at artist location
+                            L.marker([lat, lon])
+                                .addTo(map)
+                                .bindPopup(`<b><?= e($map_data['address']) ?></b><br><?= e($map_data['city']) ?>, <?= e($map_data['state']) ?>`)
+                                .openPopup();
+                        } else {
+                            document.getElementById('artist-map').innerHTML = '<p>Could not load map for this address.</p>';
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('artist-map').innerHTML = '<p>Could not load map.</p>';
+                    });
+            </script>
+
+        <?php else: ?>
+            <!-- No location saved -->
+            <?php if (isset($_SESSION['logged_in_user_id']) && $_SESSION['logged_in_access_level'] === 'artist'): ?>
+                <a href="artist-settings.php" id="add-location-btn">+ Add Your Location</a>
+            <?php else: ?>
+                <p>No location available for this artist.</p>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+</div>
 
             <!-- Reviews Section -->
             <div class="info-section">
