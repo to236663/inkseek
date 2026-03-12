@@ -1,10 +1,10 @@
-FROM nginx:stable-alpine
-LABEL org.opencontainers.image.source="https://github.com/to236663/inkseek"
+FROM php:8.2-apache
 
+# Install mysqli extension
+RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 
-RUN rm -rf /usr/share/nginx/html/*
-COPY ./ /usr/share/nginx/html
-
+# Copy all project files into Apache's web root
+COPY ./ /var/www/html/
 
 EXPOSE 80
 

@@ -1,8 +1,8 @@
 <?php
-require 'connection.php';
+require 'connect.php';
 session_start();
 
-$account_id = $_SESSION['user_id'];
+$account_id = $_SESSION['logged_in_account_id'];
 $schedule = [];
 $success = false;
 
@@ -14,6 +14,14 @@ $result = $stmt->get_result();
 $profile = $result->fetch_assoc();
 $profile_id = $profile['profile_id'];
 $stmt->close();
+
+// Get existing map data for this artist
+$map_stmt = $mysqli->prepare("SELECT * FROM map_data WHERE artist_profile_id = ?");
+$map_stmt->bind_param("i", $profile_id);
+$map_stmt->execute();
+$map_result = $map_stmt->get_result();
+$map_row = $map_result->fetch_assoc();
+$map_stmt->close();
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -64,6 +72,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 
     $success = true;
+}
+
+// Handle location update
+if (!empty($_POST['address'])) {
+    if ($map_row) {
+        // Update existing location
+        $map_update = $mysqli->prepare("UPDATE map_data SET 
+            address = ?, city = ?, state = ?, postal_code = ?, updated_at = NOW()
+            WHERE artist_profile_id = ?");
+        $map_update->bind_param("ssssi",
+            $_POST['address'],
+            $_POST['city'],
+            $_POST['state'],
+            $_POST['postal_code'],
+            $profile_id
+        );
+        $map_update->execute();
+        $map_update->close();
+    } else {
+        // Insert new location
+        $map_insert = $mysqli->prepare("INSERT INTO map_data 
+            (artist_profile_id, address, city, state, postal_code, created_at, updated_at) 
+            VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+        $map_insert->bind_param("issss",
+            $profile_id,
+            $_POST['address'],
+            $_POST['city'],
+            $_POST['state'],
+            $_POST['postal_code']
+        );
+        $map_insert->execute();
+        $map_insert->close();
+    }
 }
 
 // Load existing schedule
@@ -253,6 +294,31 @@ foreach ($days as $day) {
                 </div>
             </div>
         </div>
+
+        <!-- Location Section -->
+<div id="location-section">
+    <h3>Studio Location</h3>
+
+    <label for="address">Street Address</label>
+    <input type="text" id="address" name="address" 
+        placeholder="Enter your studio address" 
+        value="<?= e($map_row['address'] ?? '') ?>">
+
+    <label for="city">City</label>
+    <input type="text" id="city" name="city" 
+        placeholder="Enter your city" 
+        value="<?= e($map_row['city'] ?? '') ?>">
+
+    <label for="state">State</label>
+    <input type="text" id="state" name="state" 
+        placeholder="Enter your state" 
+        value="<?= e($map_row['state'] ?? '') ?>">
+
+    <label for="postal_code">Postal Code</label>
+    <input type="text" id="postal_code" name="postal_code" 
+        placeholder="Enter your postal code" 
+        value="<?= e($map_row['postal_code'] ?? '') ?>">
+</div>
 
         <button type="button" id="edit-portfolio-btn">Edit Portfolio</button>
         <button type="submit" id="save-changes-btn">Save Changes</button>

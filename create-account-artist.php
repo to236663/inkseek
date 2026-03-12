@@ -3,7 +3,7 @@
 session_start();
 
 // Include the database connection file
-require("connection.php");
+require("connect.php");
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -170,9 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             </form>
             <div id="signup-links">
-                <a href="create-account.html" class="signup-link">Personal user looking to make an account? Click
+                <a href="create-account.php" class="signup-link">Personal user looking to make an account? Click
                     here</a>
-                <a href="login.html" class="signup-link">Have an account? Click here to Log In</a>
+                <a href="login.php" class="signup-link">Have an account? Click here to Log In</a>
             </div>
         </div>
     </div>

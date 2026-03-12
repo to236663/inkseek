@@ -1,4 +1,8 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Start the session so we can store and access session variables like $_SESSION['logged_in']
 session_start();
 
@@ -39,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['logged_in'] = true;
 
             // Store the account_id in the session
-            $_SESSION['logged_in_user_id'] = $row->account_id;
+            $_SESSION['logged_in_account_id'] = $row->account_id;
 
             // Store the role in the session e.g. "artist", "user", "admin"
             $_SESSION['logged_in_access_level'] = $row->role;
@@ -171,8 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div id="signup-links">
                 <p>Don't Have an account?</p>
-                <a href="create-account.html" class="signup-link">Personal users click here to Create One</a>
-                <a href="create-account-artist.html" class="signup-link">Artists click here to Create One</a>
+                <a href="create-account.php" class="signup-link">Personal users click here to Create One</a>
+                <a href="create-account-artist.php" class="signup-link">Artists click here to Create One</a>
             </div>
         </div>
     </div>
