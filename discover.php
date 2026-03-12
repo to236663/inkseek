@@ -238,7 +238,7 @@ if ($db_ready && $mysqli instanceof mysqli) {
         <?php if (!empty($tattooRows)): ?>
             <?php foreach ($tattooRows as $tattoo): ?>
                 <div id="grid-item">
-                    <a href="<?php echo 'tattoos/' . (int)$tattoo['tattoo_id']; ?>">
+                    <a href="<?php echo 'tattoos.php?tattoo_id=' . (int)$tattoo['tattoo_id']; ?>">
                         <img src="<?php echo htmlspecialchars((string)$tattoo['image_path'], ENT_QUOTES, 'UTF-8'); ?>"
                             alt="<?php echo htmlspecialchars((string)$tattoo['title'], ENT_QUOTES, 'UTF-8'); ?>">
                     </a>
