@@ -5,6 +5,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeFilter = document.getElementById('close-filter');
     const clearFilters = document.getElementById('clear-filters');
     const applyFilters = document.getElementById('apply-filters');
+    const searchBar = document.getElementById('search-bar');
+    const searchForm = document.getElementById('search-form');
+
+    if (!filterButton || !filterOverlay || !closeFilter || !clearFilters || !applyFilters) {
+        return;
+    }
 
     // Open filter overlay
     filterButton.addEventListener('click', function () {
@@ -29,61 +35,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Clear all filters
     clearFilters.addEventListener('click', function () {
-        // Uncheck all checkboxes
+        // Uncheck all checkboxes in the overlay (style + currently non-functional filters)
         const checkboxes = filterOverlay.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => checkbox.checked = false);
 
-        // Clear text and number inputs
+        // Clear text and number inputs (non-functional filters kept for visual parity)
         const textInputs = filterOverlay.querySelectorAll('input[type="text"], input[type="number"]');
         textInputs.forEach(input => input.value = '');
     });
 
     // Apply filters
     applyFilters.addEventListener('click', function () {
-        // Get all selected filters
-        const selectedFilters = {
-            styles: [],
-            sizes: [],
-            location: '',
-            priceMin: '',
-            priceMax: '',
-            ratings: []
-        };
-
-        // Collect style filters
+        const params = new URLSearchParams(window.location.search);
         const styleCheckboxes = filterOverlay.querySelectorAll('input[name="style"]:checked');
+
+        params.delete('style');
+        params.delete('style[]');
+
         styleCheckboxes.forEach(checkbox => {
-            selectedFilters.styles.push(checkbox.value);
+            params.append('style[]', checkbox.value);
         });
 
-        // Collect size filters
-        const sizeCheckboxes = filterOverlay.querySelectorAll('input[name="size"]:checked');
-        sizeCheckboxes.forEach(checkbox => {
-            selectedFilters.sizes.push(checkbox.value);
-        });
+        if (searchBar && searchBar.value.trim() !== '') {
+            params.set('q', searchBar.value.trim());
+        } else {
+            params.delete('q');
+        }
 
-        // Get location
-        const locationInput = document.getElementById('location-input');
-        selectedFilters.location = locationInput.value;
-
-        // Get price range
-        const priceMin = document.getElementById('price-min');
-        const priceMax = document.getElementById('price-max');
-        selectedFilters.priceMin = priceMin.value;
-        selectedFilters.priceMax = priceMax.value;
-
-        // Collect rating filters
-        const ratingCheckboxes = filterOverlay.querySelectorAll('input[name="rating"]:checked');
-        ratingCheckboxes.forEach(checkbox => {
-            selectedFilters.ratings.push(checkbox.value);
-        });
-
-        // Log filters
-        console.log('Applied Filters:', selectedFilters);
-
-        // Implement actual filtering logic to filter the grid items
-        closeFilterOverlay();
+        const queryString = params.toString();
+        window.location.href = queryString === '' ? 'discover.php' : 'discover.php?' + queryString;
     });
+
+    // Keep Enter/search submit behavior in sync with current style checkbox state.
+    if (searchForm) {
+        searchForm.addEventListener('submit', function () {
+            const existingHiddenStyleInputs = searchForm.querySelectorAll('input[type="hidden"][name="style[]"]');
+            existingHiddenStyleInputs.forEach(input => input.remove());
+
+            const styleCheckboxes = filterOverlay.querySelectorAll('input[name="style"]:checked');
+            styleCheckboxes.forEach(checkbox => {
+                const hiddenStyleInput = document.createElement('input');
+                hiddenStyleInput.type = 'hidden';
+                hiddenStyleInput.name = 'style[]';
+                hiddenStyleInput.value = checkbox.value;
+                searchForm.appendChild(hiddenStyleInput);
+            });
+        });
+    }
 
     // Close overlay with Escape key
     document.addEventListener('keydown', function (e) {
