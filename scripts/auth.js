@@ -13,7 +13,7 @@ function logout() {
     if (dropdown) {
         dropdown.classList.remove('show');
     }
-    
+
     // Clear form states and overlays
     const overlays = document.querySelectorAll('.overlay, [id*="overlay"]');
     overlays.forEach(overlay => {
@@ -21,11 +21,11 @@ function logout() {
             overlay.style.display = 'none';
         }
     });
-    
+
     // Reset any form inputs
     const forms = document.querySelectorAll('form');
     forms.forEach(form => form.reset());
-    
+
     // Redirect to logout backend (destroys session) and stay on current page
     const currentPath = window.location.pathname.substring(1) || 'index.html';
     window.location.href = 'logout.php?redirect=' + encodeURIComponent(currentPath);
