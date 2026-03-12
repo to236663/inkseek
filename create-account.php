@@ -1,9 +1,9 @@
 <?php
+// Include the database connection file
+require_once("connect.php");
+
 // Start the session so we can store and access session variables
 session_start();
-
-// Include the database connection file
-require("connect.php");
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the email from the form input
     $email = $_POST['email'];
 
-    // Get the password from the form input 
+    // Get the password from the form input
     $password = $_POST['password'];
 
     // Get the confirm password from the form input
@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // If they don't match, set an error message
         $error = "Passwords do not match.";
-
     } else {
 
         // Check if the username already exists in the database
@@ -51,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set an error message telling the user the username is taken
             $error = "Username is already taken. Please choose another.";
-
         } else {
 
             // Check if the email already exists in the database
@@ -71,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Set an error message telling the user the email is already in use
                 $error = "An account with that email already exists.";
-
             } else {
 
                 // All checks passed so insert the new account into the database
@@ -96,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Stop the rest of the PHP script from running
                     exit();
-
                 } else {
 
                     // Something went wrong with the insert

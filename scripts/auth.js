@@ -96,13 +96,12 @@ function initializePageFeatures() {
     }
 
     if (portfolioForm) {
-        portfolioForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Portfolio image upload functionality would be implemented here');
-            if (portfolioOverlay) {
-                portfolioOverlay.classList.remove('active');
+        portfolioForm.addEventListener('submit', function () {
+            const uploadButton = document.getElementById('upload-portfolio-btn');
+            if (uploadButton) {
+                uploadButton.disabled = true;
+                uploadButton.textContent = 'Uploading...';
             }
-            portfolioForm.reset();
         });
     }
 

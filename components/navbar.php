@@ -65,6 +65,8 @@ if ($navAccessLevel === 'artist' && $artistProfileId > 0) {
 } elseif ($loggedInAccountId > 0) {
     $profileHref = 'user-profile.php?account_id=' . $loggedInAccountId;
 }
+
+$settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-settings.php';
 ?>
 <div id="navbar">
     <a id="logo-link" href="index.html">
@@ -99,7 +101,7 @@ if ($navAccessLevel === 'artist' && $artistProfileId > 0) {
                             </p>
                         </div>
 
-                        <a href="artist-settings.php" class="dropdown-item">
+                        <a href="<?= htmlspecialchars($settingsHref, ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
                             <img src="images/favicons/settings.png" class="dropdown-icon-img" alt="Settings">
                             <span>Account Settings</span>
                         </a>

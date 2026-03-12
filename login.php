@@ -3,11 +3,11 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Start the session so we can store and access session variables like $_SESSION['logged_in']
-session_start();
-
 // Include the shared database connection file.
 require_once __DIR__ . '/connect.php';
+
+// Start the session so we can store and access session variables like $_SESSION['logged_in']
+session_start();
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

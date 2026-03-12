@@ -1,7 +1,7 @@
 #settings-container {
     display: flex;
     justify-content: center;
-    padding: 30px 20px 60px;
+    padding: 30px 20px 90px;
     min-height: 70vh;
 }
 
@@ -11,7 +11,7 @@
     background-color: #4FBA7F;
     border-radius: 10px;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 #settings-column h1 {
@@ -77,7 +77,35 @@
     flex-direction: column;
 }
 
+.name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.success-msg,
+.error-msg {
+    margin: 0 0 16px;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 16px;
+    font-family: "Zain", sans-serif;
+}
+
+.success-msg {
+    background-color: #e7f7ee;
+    border: 1px solid #4FBA7F;
+    color: #1f6e40;
+}
+
+.error-msg {
+    background-color: #fdeaea;
+    border: 1px solid #C1272D;
+    color: #8d1c21;
+}
+
 #settings-form label {
+    display: block;
     font-family: "Zain", sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -119,25 +147,6 @@
     padding-right: 40px;
 }
 
-#edit-portfolio-btn {
-    background-color: #4FBA7F;
-    color: #000;
-    font-family: "Zain", sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    padding: 12px 32px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: background-color 0.3s ease;
-    width: 100%;
-}
-
-#edit-portfolio-btn:hover {
-    background-color: #45a870;
-}
-
 #save-changes-btn {
     background-color: #C1272D;
     color: white;
@@ -153,6 +162,17 @@
 
 #save-changes-btn:hover {
     background-color: #a01f24;
+}
+
+#location-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+#location-section input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Account Actions */
@@ -179,4 +199,16 @@
 .action-link:hover {
     color: #a01f24;
     text-decoration: underline;
+}
+
+.account-action-form {
+    margin: 0;
+}
+
+.action-link-button {
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
 }

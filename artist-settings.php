@@ -1,6 +1,11 @@
 <?php
-require 'connect.php';
 session_start();
+require_once 'connect.php';
+
+function e($value)
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
 
 // Redirect to login if not authenticated
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
@@ -10,19 +15,44 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
 $account_id = $_SESSION['logged_in_account_id'];
 $schedule = [];
-$success = false;
+$success = isset($_GET['saved']) && $_GET['saved'] === '1';
+$error_message = '';
 
-// Get profile_id for this account
-$stmt = $mysqli->prepare("SELECT profile_id FROM artist_profiles WHERE account_id = ?");
-$stmt->bind_param("i", $account_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$profile = $result->fetch_assoc();
-$profile_id = $profile['profile_id'];
-$stmt->close();
+// Load account + profile data for this artist
+$artist_stmt = $mysqli->prepare("SELECT
+    a.first_name,
+    a.last_name,
+    a.username,
+    a.profile_image_path,
+    ap.profile_id,
+    ap.about,
+    ap.availability_status,
+    ap.mon_start, ap.mon_end,
+    ap.tue_start, ap.tue_end,
+    ap.wed_start, ap.wed_end,
+    ap.thu_start, ap.thu_end,
+    ap.fri_start, ap.fri_end,
+    ap.sat_start, ap.sat_end,
+    ap.sun_start, ap.sun_end
+    FROM accounts a
+    INNER JOIN artist_profiles ap ON ap.account_id = a.account_id
+    WHERE a.account_id = ?
+    LIMIT 1");
+$artist_stmt->bind_param("i", $account_id);
+$artist_stmt->execute();
+$artist_result = $artist_stmt->get_result();
+$artist_row = $artist_result->fetch_assoc();
+$artist_stmt->close();
+
+if (!$artist_row) {
+    header('Location: create-account-artist.php');
+    exit();
+}
+
+$profile_id = (int)$artist_row['profile_id'];
 
 // Get existing map data for this artist
-$map_stmt = $mysqli->prepare("SELECT * FROM map_data WHERE artist_profile_id = ?");
+$map_stmt = $mysqli->prepare("SELECT address, city, state, postal_code FROM map_data WHERE artist_profile_id = ? LIMIT 1");
 $map_stmt->bind_param("i", $profile_id);
 $map_stmt->execute();
 $map_result = $map_stmt->get_result();
@@ -31,124 +61,160 @@ $map_stmt->close();
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
+    $first_name = trim($_POST['first_name'] ?? '');
+    $last_name = trim($_POST['last_name'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $about = trim($_POST['about'] ?? '');
     $status = $_POST['availability_status'] ?? 'available';
 
-    // Build the UPDATE query dynamically
-    $stmt = $mysqli->prepare("UPDATE artist_profiles SET
-        availability_status = ?,
-        mon_start = ?, mon_end = ?,
-        tue_start = ?, tue_end = ?,
-        wed_start = ?, wed_end = ?,
-        thu_start = ?, thu_end = ?,
-        fri_start = ?, fri_end = ?,
-        sat_start = ?, sat_end = ?,
-        sun_start = ?, sun_end = ?
-        WHERE profile_id = ?");
+    // For each day, use posted times only when the day checkbox is active.
+    $mon_start = !empty($_POST['mon_active']) && !empty($_POST['mon_start']) ? $_POST['mon_start'] : null;
+    $mon_end   = !empty($_POST['mon_active']) && !empty($_POST['mon_end']) ? $_POST['mon_end'] : null;
+    $tue_start = !empty($_POST['tue_active']) && !empty($_POST['tue_start']) ? $_POST['tue_start'] : null;
+    $tue_end   = !empty($_POST['tue_active']) && !empty($_POST['tue_end']) ? $_POST['tue_end'] : null;
+    $wed_start = !empty($_POST['wed_active']) && !empty($_POST['wed_start']) ? $_POST['wed_start'] : null;
+    $wed_end   = !empty($_POST['wed_active']) && !empty($_POST['wed_end']) ? $_POST['wed_end'] : null;
+    $thu_start = !empty($_POST['thu_active']) && !empty($_POST['thu_start']) ? $_POST['thu_start'] : null;
+    $thu_end   = !empty($_POST['thu_active']) && !empty($_POST['thu_end']) ? $_POST['thu_end'] : null;
+    $fri_start = !empty($_POST['fri_active']) && !empty($_POST['fri_start']) ? $_POST['fri_start'] : null;
+    $fri_end   = !empty($_POST['fri_active']) && !empty($_POST['fri_end']) ? $_POST['fri_end'] : null;
+    $sat_start = !empty($_POST['sat_active']) && !empty($_POST['sat_start']) ? $_POST['sat_start'] : null;
+    $sat_end   = !empty($_POST['sat_active']) && !empty($_POST['sat_end']) ? $_POST['sat_end'] : null;
+    $sun_start = !empty($_POST['sun_active']) && !empty($_POST['sun_start']) ? $_POST['sun_start'] : null;
+    $sun_end   = !empty($_POST['sun_active']) && !empty($_POST['sun_end']) ? $_POST['sun_end'] : null;
 
-    // For each day, use the posted time if checkbox is checked, otherwise NULL
-    $mon_start = !empty($_POST['mon_active']) ? $_POST['mon_start'] : null;
-    $mon_end   = !empty($_POST['mon_active']) ? $_POST['mon_end']   : null;
-    $tue_start = !empty($_POST['tue_active']) ? $_POST['tue_start'] : null;
-    $tue_end   = !empty($_POST['tue_active']) ? $_POST['tue_end']   : null;
-    $wed_start = !empty($_POST['wed_active']) ? $_POST['wed_start'] : null;
-    $wed_end   = !empty($_POST['wed_active']) ? $_POST['wed_end']   : null;
-    $thu_start = !empty($_POST['thu_active']) ? $_POST['thu_start'] : null;
-    $thu_end   = !empty($_POST['thu_active']) ? $_POST['thu_end']   : null;
-    $fri_start = !empty($_POST['fri_active']) ? $_POST['fri_start'] : null;
-    $fri_end   = !empty($_POST['fri_active']) ? $_POST['fri_end']   : null;
-    $sat_start = !empty($_POST['sat_active']) ? $_POST['sat_start'] : null;
-    $sat_end   = !empty($_POST['sat_active']) ? $_POST['sat_end']   : null;
-    $sun_start = !empty($_POST['sun_active']) ? $_POST['sun_start'] : null;
-    $sun_end   = !empty($_POST['sun_active']) ? $_POST['sun_end']   : null;
+    $address = trim($_POST['address'] ?? '');
+    $city = trim($_POST['city'] ?? '');
+    $state = trim($_POST['state'] ?? '');
+    $postal_code = trim($_POST['postal_code'] ?? '');
 
-    $stmt->bind_param(
-        "ssssssssssssssi",
-        $status,
-        $mon_start,
-        $mon_end,
-        $tue_start,
-        $tue_end,
-        $wed_start,
-        $wed_end,
-        $thu_start,
-        $thu_end,
-        $fri_start,
-        $fri_end,
-        $sat_start,
-        $sat_end,
-        $sun_start,
-        $sun_end,
-        $profile_id
-    );
-    $stmt->execute();
-    $stmt->close();
+    $about = $about === '' ? null : $about;
+    $address = $address === '' ? null : $address;
+    $city = $city === '' ? null : $city;
+    $state = $state === '' ? null : $state;
+    $postal_code = $postal_code === '' ? null : $postal_code;
 
-    $success = true;
-}
-
-// Handle location update
-if (!empty($_POST['address'])) {
-    if ($map_row) {
-        // Update existing location
-        $map_update = $mysqli->prepare("UPDATE map_data SET
-            address = ?, city = ?, state = ?, postal_code = ?, updated_at = NOW()
-            WHERE artist_profile_id = ?");
-        $map_update->bind_param(
-            "ssssi",
-            $_POST['address'],
-            $_POST['city'],
-            $_POST['state'],
-            $_POST['postal_code'],
-            $profile_id
-        );
-        $map_update->execute();
-        $map_update->close();
+    if ($first_name === '' || $last_name === '' || $username === '') {
+        $error_message = 'First name, last name, and username are required.';
     } else {
-        // Insert new location
-        $map_insert = $mysqli->prepare("INSERT INTO map_data
-            (artist_profile_id, address, city, state, postal_code, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
-        $map_insert->bind_param(
-            "issss",
-            $profile_id,
-            $_POST['address'],
-            $_POST['city'],
-            $_POST['state'],
-            $_POST['postal_code']
-        );
-        $map_insert->execute();
-        $map_insert->close();
+        $mysqli->begin_transaction();
+
+        try {
+            $account_update = $mysqli->prepare("UPDATE accounts SET first_name = ?, last_name = ?, username = ? WHERE account_id = ?");
+            $account_update->bind_param("sssi", $first_name, $last_name, $username, $account_id);
+            $account_update->execute();
+            $account_update->close();
+
+            $profile_update = $mysqli->prepare("UPDATE artist_profiles SET
+                about = ?,
+                availability_status = ?,
+                mon_start = ?, mon_end = ?,
+                tue_start = ?, tue_end = ?,
+                wed_start = ?, wed_end = ?,
+                thu_start = ?, thu_end = ?,
+                fri_start = ?, fri_end = ?,
+                sat_start = ?, sat_end = ?,
+                sun_start = ?, sun_end = ?
+                WHERE profile_id = ?");
+
+            $profile_update->bind_param(
+                "ssssssssssssssssi",
+                $about,
+                $status,
+                $mon_start,
+                $mon_end,
+                $tue_start,
+                $tue_end,
+                $wed_start,
+                $wed_end,
+                $thu_start,
+                $thu_end,
+                $fri_start,
+                $fri_end,
+                $sat_start,
+                $sat_end,
+                $sun_start,
+                $sun_end,
+                $profile_id
+            );
+            $profile_update->execute();
+            $profile_update->close();
+
+            if ($map_row) {
+                $map_update = $mysqli->prepare("UPDATE map_data SET
+                    address = ?, city = ?, state = ?, postal_code = ?, updated_at = NOW()
+                    WHERE artist_profile_id = ?");
+                $map_update->bind_param("ssssi", $address, $city, $state, $postal_code, $profile_id);
+                $map_update->execute();
+                $map_update->close();
+            } elseif ($address !== null || $city !== null || $state !== null || $postal_code !== null) {
+                $map_insert = $mysqli->prepare("INSERT INTO map_data
+                    (artist_profile_id, address, city, state, postal_code, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, NOW(), NOW())");
+                $map_insert->bind_param("issss", $profile_id, $address, $city, $state, $postal_code);
+                $map_insert->execute();
+                $map_insert->close();
+            }
+
+            $mysqli->commit();
+
+            $_SESSION['logged_in_username'] = $username;
+            $_SESSION['logged_in_first_name'] = $first_name;
+            $_SESSION['logged_in_last_name'] = $last_name;
+
+            header('Location: artist-settings.php?saved=1');
+            exit();
+        } catch (Throwable $t) {
+            $mysqli->rollback();
+            $error_message = 'Unable to save changes right now. Please try again.';
+        }
     }
 }
 
-// Load existing schedule
-$stmt = $mysqli->prepare("SELECT
-    availability_status,
-    mon_start, mon_end,
-    tue_start, tue_end,
-    wed_start, wed_end,
-    thu_start, thu_end,
-    fri_start, fri_end,
-    sat_start, sat_end,
-    sun_start, sun_end
-    FROM artist_profiles WHERE profile_id = ?");
-$stmt->bind_param("i", $profile_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$row = $result->fetch_assoc();
-$stmt->close();
+// Reload account/profile/map state after POST for immediate rendering.
+$artist_stmt = $mysqli->prepare("SELECT
+    a.first_name,
+    a.last_name,
+    a.username,
+    a.profile_image_path,
+    ap.profile_id,
+    ap.about,
+    ap.availability_status,
+    ap.mon_start, ap.mon_end,
+    ap.tue_start, ap.tue_end,
+    ap.wed_start, ap.wed_end,
+    ap.thu_start, ap.thu_end,
+    ap.fri_start, ap.fri_end,
+    ap.sat_start, ap.sat_end,
+    ap.sun_start, ap.sun_end
+    FROM accounts a
+    INNER JOIN artist_profiles ap ON ap.account_id = a.account_id
+    WHERE a.account_id = ?
+    LIMIT 1");
+$artist_stmt->bind_param("i", $account_id);
+$artist_stmt->execute();
+$artist_result = $artist_stmt->get_result();
+$artist_row = $artist_result->fetch_assoc();
+$artist_stmt->close();
 
-$availability_status = $row['availability_status'] ?? 'available';
+$profile_id = (int)$artist_row['profile_id'];
+
+$map_stmt = $mysqli->prepare("SELECT address, city, state, postal_code FROM map_data WHERE artist_profile_id = ? LIMIT 1");
+$map_stmt->bind_param("i", $profile_id);
+$map_stmt->execute();
+$map_result = $map_stmt->get_result();
+$map_row = $map_result->fetch_assoc();
+$map_stmt->close();
+
+$availability_status = $artist_row['availability_status'] ?? 'available';
 
 // Build $schedule array to match the HTML expectations
 $days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 foreach ($days as $day) {
-    if (!empty($row[$day . '_start'])) {
+    if (!empty($artist_row[$day . '_start'])) {
         $schedule[$day] = [
-            'start' => $row[$day . '_start'],
-            'end'   => $row[$day . '_end']
+            'start' => $artist_row[$day . '_start'],
+            'end'   => $artist_row[$day . '_end']
         ];
     }
 }
@@ -180,7 +246,7 @@ foreach ($days as $day) {
             <!-- Profile Picture Section -->
             <div id="profile-picture-section">
                 <div id="settings-profile-picture">
-                    <img src="images/profile photos/Artist/Profile_1.jpg" alt="Profile Picture">
+                    <img src="<?= e($artist_row['profile_image_path'] ?: 'images/profile photos/Artist/Profile_1.jpg') ?>" alt="Profile Picture">
                 </div>
                 <button id="edit-picture-btn">Edit Profile Picture</button>
             </div>
@@ -193,14 +259,26 @@ foreach ($days as $day) {
                         <p class="success-msg">Changes saved successfully!</p>
                     <?php endif; ?>
 
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your name" value="Naomi Sinclair">
+                    <?php if ($error_message !== ''): ?>
+                        <p class="error-msg"><?= e($error_message) ?></p>
+                    <?php endif; ?>
+
+                    <div class="name-row">
+                        <div>
+                            <label for="first_name">First name</label>
+                            <input type="text" id="first_name" name="first_name" value="<?= e($artist_row['first_name'] ?? '') ?>" required>
+                        </div>
+                        <div>
+                            <label for="last_name">Last name</label>
+                            <input type="text" id="last_name" name="last_name" value="<?= e($artist_row['last_name'] ?? '') ?>" required>
+                        </div>
+                    </div>
 
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Enter your username" value="SilverSpire_Ink">
+                    <input type="text" id="username" name="username" value="<?= e($artist_row['username'] ?? '') ?>" required>
 
                     <label for="about">About</label>
-                    <textarea id="about" name="about" rows="5" placeholder="Tell us about yourself">Specializing in neo-traditional and illustrative tattoos with a focus on nature-inspired designs. 10+ years of experience creating custom pieces that tell your story.</textarea>
+                    <textarea id="about" name="about" rows="5"><?= e($artist_row['about'] ?? '') ?></textarea>
 
                     <!-- Availability -->
                     <div id="availability-section">
@@ -316,27 +394,26 @@ foreach ($days as $day) {
                         <h3>Studio Location</h3>
 
                         <label for="address">Street Address</label>
+                        <br>
                         <input type="text" id="address" name="address"
-                            placeholder="Enter your studio address"
                             value="<?= e($map_row['address'] ?? '') ?>">
 
                         <label for="city">City</label>
+                        <br>
                         <input type="text" id="city" name="city"
-                            placeholder="Enter your city"
                             value="<?= e($map_row['city'] ?? '') ?>">
 
                         <label for="state">State</label>
+                        <br>
                         <input type="text" id="state" name="state"
-                            placeholder="Enter your state"
                             value="<?= e($map_row['state'] ?? '') ?>">
 
                         <label for="postal_code">Postal Code</label>
+                        <br>
                         <input type="text" id="postal_code" name="postal_code"
-                            placeholder="Enter your postal code"
                             value="<?= e($map_row['postal_code'] ?? '') ?>">
                     </div>
 
-                    <button type="button" id="edit-portfolio-btn">Edit Portfolio</button>
                     <button type="submit" id="save-changes-btn">Save Changes</button>
 
                 </form>
@@ -345,8 +422,17 @@ foreach ($days as $day) {
 
             <!-- Account Actions -->
             <div id="account-actions">
-                <a href="user-settings.html" class="action-link">Convert to User Account</a>
-                <a href="#" class="action-link">Delete Account</a>
+                <form method="POST" action="account-actions.php" class="account-action-form">
+                    <input type="hidden" name="action" value="convert_to_user">
+                    <input type="hidden" name="redirect" value="artist-settings.php">
+                    <button type="submit" class="action-link action-link-button">Convert to User Account</button>
+                </form>
+
+                <form method="POST" action="account-actions.php" class="account-action-form" onsubmit="return confirm('Delete your account and all associated data? This cannot be undone.');">
+                    <input type="hidden" name="action" value="delete_account">
+                    <input type="hidden" name="redirect" value="artist-settings.php">
+                    <button type="submit" class="action-link action-link-button">Delete Account</button>
+                </form>
             </div>
 
         </div><!-- end settings-column -->

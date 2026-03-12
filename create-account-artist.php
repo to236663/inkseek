@@ -1,9 +1,9 @@
 <?php
+// Include the database connection file
+require_once("connect.php");
+
 // Start the session so we can store and access session variables
 session_start();
-
-// Include the database connection file
-require("connect.php");
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
