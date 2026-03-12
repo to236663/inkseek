@@ -3,7 +3,7 @@
 session_start();
 
 // Include the database connection file which creates the $mysqli connection object
-require("connection.php");
+require("connect.php");
 
 // Check if the form was submitted using POST method
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Fetch the result as an object so we can access columns like $row->username
         $row = $result->fetch_object();
-        
+
         if ($row && $password == $row->password) {
 
             // Mark the user as logged in by setting a session variable
@@ -104,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Stop the rest of the PHP script from running after the redirect
             exit();
-
         } else {
 
             // If the username was not found or the password hash did not match, set an error message
@@ -183,3 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+<?php
+if (isset($mysqli) && $mysqli instanceof mysqli) {
+    $mysqli->close();
+}
+?>
