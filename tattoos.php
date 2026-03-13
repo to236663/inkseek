@@ -1,4 +1,8 @@
 <?php
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 require_once __DIR__ . '/connect.php';
 
 function e($value)
@@ -30,6 +34,13 @@ $selectedTattoo = null;
 $styleTags = [];
 $artistPortfolio = [];
 $artistProfileHref = 'discover.php';
+$loggedInAccountId = isset($_SESSION['logged_in_account_id']) ? (int)$_SESSION['logged_in_account_id'] : 0;
+$loggedInAccessLevel = (string)($_SESSION['logged_in_access_level'] ?? '');
+$canBookmark = isset($_SESSION['logged_in'])
+    && $_SESSION['logged_in'] === true
+    && $loggedInAccountId > 0
+    && $loggedInAccessLevel === 'user';
+$isBookmarked = false;
 
 if ($db_ready && $mysqli instanceof mysqli && $tattooId > 0) {
     $tattooStmt = $mysqli->prepare(
@@ -104,6 +115,23 @@ if ($db_ready && $mysqli instanceof mysqli && $tattooId > 0) {
                 $portfolioStmt->close();
             }
         }
+
+        if ($canBookmark) {
+            $bookmarkStmt = $mysqli->prepare(
+                'SELECT 1
+                 FROM bookmarks
+                 WHERE account_id = ? AND tattoo_id = ?
+                 LIMIT 1'
+            );
+
+            if ($bookmarkStmt) {
+                $bookmarkStmt->bind_param('ii', $loggedInAccountId, $tattooId);
+                $bookmarkStmt->execute();
+                $bookmarkResult = $bookmarkStmt->get_result();
+                $isBookmarked = $bookmarkResult && $bookmarkResult->fetch_row() !== null;
+                $bookmarkStmt->close();
+            }
+        }
     }
 }
 
@@ -140,7 +168,21 @@ $pageTitle = $selectedTattoo && !empty($selectedTattoo['title'])
                     <div id="title-row">
                         <h2 id="image-title"><?php echo e($selectedTattoo['title'] ?: 'Untitled Tattoo'); ?></h2>
                         <div id="action-icons">
-                            <img id="bookmark-icon" src="images/favicons/bookmark.png" alt="Bookmark" class="action-icon">
+                            <?php if ($canBookmark): ?>
+                                <button
+                                    type="button"
+                                    id="bookmark-button"
+                                    class="action-button"
+                                    data-bookmark-endpoint="bookmark-actions.php"
+                                    data-tattoo-id="<?php echo (int)$tattooId; ?>"
+                                    data-bookmarked="<?php echo $isBookmarked ? 'true' : 'false'; ?>">
+                                    <img
+                                        id="bookmark-icon"
+                                        src="<?php echo e($isBookmarked ? 'images/favicons/bookmark-clicked.png' : 'images/favicons/bookmark.png'); ?>"
+                                        alt="Bookmark"
+                                        class="action-icon">
+                                </button>
+                            <?php endif; ?>
                             <span class="three-dots">...</span>
                         </div>
                     </div>
@@ -199,27 +241,61 @@ $pageTitle = $selectedTattoo && !empty($selectedTattoo['title'])
     <div id="footer-placeholder"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookmarkButton = document.getElementById('bookmark-button');
             const bookmarkIcon = document.getElementById('bookmark-icon');
-            if (!bookmarkIcon) {
+            if (!bookmarkButton || !bookmarkIcon) {
                 return;
             }
 
-            const bookmarkKey = 'bookmark-tattoo-<?php echo (int)$tattooId; ?>';
-            const isBookmarked = sessionStorage.getItem(bookmarkKey) === 'true';
-            if (isBookmarked) {
-                bookmarkIcon.src = 'images/favicons/bookmark-clicked.png';
-            }
+            const inactiveIconSrc = 'images/favicons/bookmark.png';
+            const activeIconSrc = 'images/favicons/bookmark-clicked.png';
+            let isBookmarked = bookmarkButton.dataset.bookmarked === 'true';
 
-            bookmarkIcon.addEventListener('click', function (e) {
+            const setBookmarkedState = function(bookmarked) {
+                isBookmarked = bookmarked;
+                bookmarkButton.dataset.bookmarked = bookmarked ? 'true' : 'false';
+
+                bookmarkIcon.src = bookmarked ? activeIconSrc : inactiveIconSrc;
+            };
+
+            setBookmarkedState(isBookmarked);
+
+            bookmarkButton.addEventListener('click', async function(e) {
                 e.preventDefault();
+                e.stopPropagation();
 
-                if (this.src.includes('bookmark-clicked')) {
-                    this.src = 'images/favicons/bookmark.png';
-                    sessionStorage.setItem(bookmarkKey, 'false');
-                } else {
-                    this.src = 'images/favicons/bookmark-clicked.png';
-                    sessionStorage.setItem(bookmarkKey, 'true');
+                if (bookmarkButton.disabled) {
+                    return;
+                }
+
+                bookmarkButton.disabled = true;
+
+                const action = isBookmarked ? 'remove_bookmark' : 'add_bookmark';
+
+                try {
+                    const response = await fetch(bookmarkButton.dataset.bookmarkEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: new URLSearchParams({
+                            action: action,
+                            tattoo_id: bookmarkButton.dataset.tattooId
+                        }).toString()
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Could not update bookmark right now.');
+                    }
+
+                    setBookmarkedState(Boolean(data.bookmarked));
+                } catch (error) {
+                    alert(error.message || 'Could not update bookmark right now.');
+                } finally {
+                    bookmarkButton.disabled = false;
                 }
             });
         });
