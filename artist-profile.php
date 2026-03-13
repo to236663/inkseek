@@ -25,6 +25,7 @@ $reviewError = '';
 $openReviewOverlay = false;
 $reviewDraftContent = '';
 $reviewDraftRating = 0;
+$isFollowing = false;
 
 // If no profile_id, redirect unauthenticated users to login
 if ($profile_id === null && (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true)) {
@@ -60,6 +61,74 @@ $is_own_profile = isset($_SESSION['logged_in_account_id']) && $_SESSION['logged_
 $profileQuery = '';
 if ($profile_id !== null && ctype_digit((string)$profile_id)) {
     $profileQuery = '?profile_id=' . (int)$profile_id;
+}
+
+// Check if logged-in user is following this artist
+if (
+    !$is_own_profile
+    && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
+    && isset($_SESSION['logged_in_account_id'])
+    && $account_id
+    && isset($mysqli) && $mysqli instanceof mysqli
+) {
+    $followCheckStmt = $mysqli->prepare(
+        'SELECT 1 FROM account_follows WHERE follower_account_id = ? AND following_account_id = ? LIMIT 1'
+    );
+    if ($followCheckStmt) {
+        $viewerId = (int)$_SESSION['logged_in_account_id'];
+        $followTargetAccountId = (int)$account_id;
+        $followCheckStmt->bind_param('ii', $viewerId, $followTargetAccountId);
+        $followCheckStmt->execute();
+        $isFollowing = $followCheckStmt->get_result()->fetch_row() !== null;
+        $followCheckStmt->close();
+    }
+}
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['toggle_follow'])
+    && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true
+    && isset($_SESSION['logged_in_account_id'])
+) {
+    $followerId = (int)$_SESSION['logged_in_account_id'];
+    $followTargetId = filter_var(
+        $_POST['target_account_id'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+    if ($followTargetId && $followerId !== (int)$followTargetId && isset($mysqli) && $mysqli instanceof mysqli) {
+        $followTargetIdInt = (int)$followTargetId;
+        $ckStmt = $mysqli->prepare(
+            'SELECT 1 FROM account_follows WHERE follower_account_id = ? AND following_account_id = ? LIMIT 1'
+        );
+        if ($ckStmt) {
+            $ckStmt->bind_param('ii', $followerId, $followTargetIdInt);
+            $ckStmt->execute();
+            $alreadyFollowing = $ckStmt->get_result()->fetch_row() !== null;
+            $ckStmt->close();
+            if ($alreadyFollowing) {
+                $muteStmt = $mysqli->prepare(
+                    'DELETE FROM account_follows WHERE follower_account_id = ? AND following_account_id = ?'
+                );
+                if ($muteStmt) {
+                    $muteStmt->bind_param('ii', $followerId, $followTargetIdInt);
+                    $muteStmt->execute();
+                    $muteStmt->close();
+                }
+            } else {
+                $addStmt = $mysqli->prepare(
+                    'INSERT IGNORE INTO account_follows (follower_account_id, following_account_id) VALUES (?, ?)'
+                );
+                if ($addStmt) {
+                    $addStmt->bind_param('ii', $followerId, $followTargetIdInt);
+                    $addStmt->execute();
+                    $addStmt->close();
+                }
+            }
+        }
+    }
+    header('Location: artist-profile.php' . $profileQuery);
+    exit();
 }
 
 if (
@@ -347,6 +416,20 @@ if ($account_id) {
         $stmt->close();
     }
 }
+
+// Get follower count
+$follower_count = 0;
+if ($account_id && isset($mysqli) && $mysqli instanceof mysqli) {
+    $fcStmt = $mysqli->prepare('SELECT COUNT(*) FROM account_follows WHERE following_account_id = ?');
+    if ($fcStmt) {
+        $fcAccountId = (int)$account_id;
+        $fcStmt->bind_param('i', $fcAccountId);
+        $fcStmt->execute();
+        $fcStmt->bind_result($follower_count);
+        $fcStmt->fetch();
+        $fcStmt->close();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -377,8 +460,9 @@ if ($account_id) {
                 <p id="artist-real-name"><?= e($artist['first_name']) ?> <?= e($artist['last_name']) ?></p>
 
                 <div id="rating">
-                    <span class="rating-number"><?= $avg_rating ?></span>
+                    <span class="rating-number"><?= $avg_rating ?> ★</span>
                     <p id="review-count"><?= $review_count ?> review<?= $review_count !== 1 ? 's' : '' ?></p>
+                    <p id="follower-count"><?= (int)$follower_count ?> follower<?= $follower_count !== 1 ? 's' : '' ?></p>
                 </div>
 
                 <div id="artist-layout">
@@ -418,7 +502,11 @@ if ($account_id) {
                     <?php if ($is_own_profile): ?>
                         <button class="action-btn" id="edit-profile-btn" onclick="window.location.href='artist-settings.php'">Edit Profile</button>
                     <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
-                        <button class="action-btn" id="follow-btn" style="display: none;">Follow</button>
+                        <form method="post" action="artist-profile.php<?= e($profileQuery) ?>" style="flex:1; display:contents;">
+                            <input type="hidden" name="toggle_follow" value="1">
+                            <input type="hidden" name="target_account_id" value="<?= (int)$account_id ?>">
+                            <button type="submit" class="action-btn" id="follow-btn"><?= $isFollowing ? 'Unfollow' : 'Follow' ?></button>
+                        </form>
                         <button class="action-btn" id="message-btn" onclick="window.location.href='messages.php?conversation=<?= (int)$account_id ?>'">Message Artist</button>
                     <?php endif; ?>
                 </div>
@@ -583,19 +671,18 @@ if ($account_id) {
                 <h2 style="font-family: 'BBH Hegarty', sans-serif; text-align: left; font-weight: normal;">Review Artist
                 </h2>
 
-                <form id="review-form-content" method="post" action="artist-profile.php<?= e($profileQuery) ?>">
+                <form id="review-form-content" method="post" action="artist-profile.php<?= e($profileQuery) ?>" novalidate>
                     <input type="hidden" name="submit_review" value="1">
                     <input type="hidden" name="artist_id" value="<?= (int)$account_id ?>">
-                    <input type="hidden" name="rating" id="review-rating-input" value="<?= (int)$reviewDraftRating ?>">
 
-                    <div id="star-rating-container">
-                        <div class="star-rating">
-                            <span class="rating-star" data-value="1">★</span>
-                            <span class="rating-star" data-value="2">★</span>
-                            <span class="rating-star" data-value="3">★</span>
-                            <span class="rating-star" data-value="4">★</span>
-                            <span class="rating-star" data-value="5">★</span>
-                        </div>
+                    <div id="rating-select-container">
+                        <label for="review-rating-select">Rating</label>
+                        <select id="review-rating-select" name="rating">
+                            <option value="">Select a rating</option>
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <option value="<?= $i ?>" <?= $reviewDraftRating === $i ? 'selected' : '' ?>><?= $i ?></option>
+                            <?php endfor; ?>
+                        </select>
                     </div>
 
                     <div id="review-text-container">
@@ -604,6 +691,8 @@ if ($account_id) {
 
                     <?php if ($reviewError !== ''): ?>
                         <p id="review-error" style="color:#b84a4a; margin: 8px 0 0;"><?= e($reviewError) ?></p>
+                    <?php else: ?>
+                        <p id="review-error" style="color:#b84a4a; margin: 8px 0 0; display:none;"></p>
                     <?php endif; ?>
 
                     <button type="submit" id="submit-review-btn" class="review-submit-btn">Review Artist</button>
@@ -621,19 +710,8 @@ if ($account_id) {
             const overlay = document.getElementById('review-overlay');
             const openBtn = document.getElementById('review-artist-btn');
             const closeBtn = document.getElementById('close-review-modal');
-            const stars = Array.from(document.querySelectorAll('.rating-star'));
-            const ratingInput = document.getElementById('review-rating-input');
             const reviewForm = document.getElementById('review-form-content');
             const reviewError = document.getElementById('review-error');
-
-            function setRating(value) {
-                if (!ratingInput) return;
-                ratingInput.value = String(value);
-                stars.forEach(function(star) {
-                    const starVal = Number(star.getAttribute('data-value'));
-                    star.classList.toggle('active', starVal <= value);
-                });
-            }
 
             if (openBtn && overlay) {
                 openBtn.addEventListener('click', function() {
@@ -655,27 +733,19 @@ if ($account_id) {
                 });
             }
 
-            stars.forEach(function(star) {
-                star.addEventListener('click', function() {
-                    const val = Number(star.getAttribute('data-value'));
-                    setRating(val);
-                });
-            });
-
-            if (ratingInput && ratingInput.value) {
-                setRating(Number(ratingInput.value));
-            }
-
             if (reviewForm) {
                 reviewForm.addEventListener('submit', function(e) {
+                    const ratingSelect = document.getElementById('review-rating-select');
                     const textInput = document.getElementById('review-text-input');
-                    const hasRating = ratingInput && ratingInput.value;
+                    const hasRating = ratingSelect && ratingSelect.value;
                     const hasText = textInput && textInput.value.trim().length > 0;
 
                     if (!hasRating || !hasText) {
                         e.preventDefault();
-                        if (reviewError) {
-                            reviewError.textContent = "Couldn't review artist";
+                        const errEl = document.getElementById('review-error');
+                        if (errEl) {
+                            errEl.textContent = "Couldn't review artist";
+                            errEl.style.display = '';
                         }
                     }
                 });
