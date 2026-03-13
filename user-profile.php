@@ -48,7 +48,7 @@ $bookmarkedTattoos = [];
 
 if ($accountId !== null && isset($mysqli) && $mysqli instanceof mysqli) {
     $accountStmt = $mysqli->prepare(
-        'SELECT a.account_id, a.username, a.first_name, a.last_name, a.profile_image_path, ap.about
+        'SELECT a.account_id, a.role, a.username, a.first_name, a.last_name, a.profile_image_path, ap.about
          FROM accounts a
          LEFT JOIN artist_profiles ap ON ap.account_id = a.account_id
          WHERE a.account_id = ?
@@ -106,6 +106,7 @@ if ($accountId !== null && isset($mysqli) && $mysqli instanceof mysqli) {
     }
 }
 
+$is_own_profile = ($accountId !== null && $sessionAccountId > 0 && $accountId === $sessionAccountId);
 $username = $account ? (string)$account['username'] : 'unknown';
 $realName = $account ? trim((string)$account['first_name'] . ' ' . (string)$account['last_name']) : 'Unknown User';
 $profileImagePath = $defaultProfileImage;
@@ -165,10 +166,16 @@ if ($account) {
                 </div>
 
                 <div id="profile-buttons">
-                    <button class="profile-btn" id="edit-profile-btn"
-                        onclick="window.location.href='user-settings.php'">Edit Profile</button>
-                    <button class="profile-btn" id="messages-btn"
-                        onclick="window.location.href='messages.php'">Messages</button>
+                    <?php if ($is_own_profile): ?>
+                        <button class="profile-btn" id="edit-profile-btn"
+                            onclick="window.location.href='user-settings.php'">Edit Profile</button>
+                        <button class="profile-btn" id="messages-btn"
+                            onclick="window.location.href='messages.php'">Messages</button>
+                    <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+                        <?php $msgLabel = ($account && ($account['role'] ?? 'user') === 'artist') ? 'Message Artist' : 'Message User'; ?>
+                        <button class="profile-btn" id="message-btn"
+                            onclick="window.location.href='messages.php?conversation=<?= (int)$accountId ?>'"><?= $msgLabel ?></button>
+                    <?php endif; ?>
                 </div>
             </div>
 

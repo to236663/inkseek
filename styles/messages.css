@@ -1,4 +1,9 @@
-/* Messages Page Styles */
+/* ============================================================
+   Messages Page
+   Key fix: min-height: 0 on every nested flex child prevents
+   content from overflowing the viewport and pushing the input
+   bar off-screen when overflow: hidden is set on the body.
+   ============================================================ */
 
 body.messages-page {
     display: flex;
@@ -7,85 +12,123 @@ body.messages-page {
     overflow: hidden;
 }
 
+/* Navbar placeholder must not grow/shrink unpredictably */
+body.messages-page #navbar-placeholder {
+    flex-shrink: 0;
+}
+
+/* Two-column layout fills remaining height */
 #messages-container {
     display: flex;
     flex: 1;
-    margin: 0;
+    min-height: 0;
+    /* prevent flex child overflow */
     background-color: #F2F1ED;
 }
 
-/* Left Sidebar - User List */
+/* ── Left Sidebar ── */
 #users-sidebar {
-    width: 22%;
-    max-width: 300px;
+    width: 260px;
+    flex-shrink: 0;
     background-color: #4FBA7F;
     display: flex;
     flex-direction: column;
-    padding: 20px 0;
-    gap: 10px;
+    padding: 16px 0;
+    gap: 8px;
     overflow-y: auto;
 }
 
-.user-item {
+a.user-item {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    margin: 0 15px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 0 12px;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    gap: 15px;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-.user-item:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+a.user-item:hover {
+    background-color: rgba(255, 255, 255, 0.22);
     box-shadow: inset 0 0 0 2px #FFC857;
 }
 
-.user-item.active {
+a.user-item.active {
     background-color: rgba(255, 255, 255, 0.3);
     box-shadow: inset 0 0 0 2px #FFC857;
 }
 
 .user-avatar {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
 }
 
 .user-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #F2F1ED;
     word-break: break-word;
 }
 
-/* Right Side - Message Section */
+.sidebar-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    font-size: 14px;
+}
+
+/* ── Right Message Panel ── */
 #message-section {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    /* prevent flex child overflow */
     background-color: #F2F1ED;
 }
 
+#conversation-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    background-color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+.conversation-username {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Scrollable messages area */
 #messages-display {
     flex: 1;
-    padding: 30px;
+    min-height: 0;
+    /* prevent flex child overflow */
+    padding: 24px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
 .message-bubble {
     background-color: white;
-    border-radius: 20px;
-    padding: 15px 20px;
-    max-width: 70%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    padding: 12px 18px;
+    max-width: 68%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
 }
 
 .message-bubble.received {
@@ -103,44 +146,53 @@ body.messages-page {
 
 .message-bubble p {
     margin: 0;
-    font-size: 15px;
-    line-height: 1.4;
+    font-size: 14px;
+    line-height: 1.5;
     color: #333;
 }
 
-/* Message Input */
+.no-messages {
+    align-self: center;
+    margin: auto;
+    color: #aaa;
+    font-size: 15px;
+    text-align: center;
+}
+
+/* ── Input Bar ── */
 #message-input-container {
-    padding: 20px 30px;
+    flex-shrink: 0;
+    padding: 16px 24px;
     background-color: #F2F1ED;
 }
 
 #message-input {
     width: 100%;
-    padding: 15px 20px;
+    padding: 14px 20px;
     font-size: 15px;
     font-family: Zain, sans-serif;
     border: none;
-    border-radius: 25px;
+    border-radius: 24px;
     background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     outline: none;
     box-sizing: border-box;
 }
 
 #message-input::placeholder {
-    color: #999;
-}
-
-/* Remove any hover effects on input */
-#message-input:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #aaa;
 }
 
 #message-input:focus {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
-/* Responsive adjustments */
+#message-input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
     #messages-container {
         flex-direction: column;
@@ -148,18 +200,18 @@ body.messages-page {
 
     #users-sidebar {
         width: 100%;
-        max-width: none;
         flex-direction: row;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: 15px 0;
+        padding: 12px 0;
+        min-height: 80px;
     }
 
-    .user-item {
+    a.user-item {
         flex-direction: column;
-        min-width: 100px;
+        min-width: 90px;
         text-align: center;
-        gap: 8px;
+        gap: 6px;
     }
 
     .message-bubble {

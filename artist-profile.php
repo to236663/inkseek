@@ -21,6 +21,10 @@ $profile_id = $_GET['profile_id'] ?? null;
 $artist_id = null;
 $account_id = null;
 $is_own_profile = false;
+$reviewError = '';
+$openReviewOverlay = false;
+$reviewDraftContent = '';
+$reviewDraftRating = 0;
 
 // If no profile_id, redirect unauthenticated users to login
 if ($profile_id === null && (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true)) {
@@ -52,6 +56,11 @@ if ($profile_id) {
 }
 
 $is_own_profile = isset($_SESSION['logged_in_account_id']) && $_SESSION['logged_in_account_id'] == $account_id;
+
+$profileQuery = '';
+if ($profile_id !== null && ctype_digit((string)$profile_id)) {
+    $profileQuery = '?profile_id=' . (int)$profile_id;
+}
 
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -126,6 +135,113 @@ if (
 
     header('Location: artist-profile.php');
     exit();
+}
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset($_POST['submit_review'])
+) {
+    $reviewerId = isset($_SESSION['logged_in_account_id']) ? (int)$_SESSION['logged_in_account_id'] : 0;
+    $artistIdFromPost = filter_var(
+        $_POST['artist_id'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+    $targetArtistId = $artistIdFromPost ? (int)$artistIdFromPost : (int)$account_id;
+    $rating = filter_var(
+        $_POST['rating'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1, 'max_range' => 5]]
+    );
+    $content = trim((string)($_POST['content'] ?? ''));
+    $reviewDraftContent = (string)($_POST['content'] ?? '');
+    $reviewDraftRating = $rating ? (int)$rating : 0;
+
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $reviewerId <= 0) {
+        $reviewError = "Couldn't review artist";
+        $openReviewOverlay = true;
+    } elseif ($targetArtistId <= 0 || $reviewerId === $targetArtistId) {
+        $reviewError = "Couldn't review artist";
+        $openReviewOverlay = true;
+    } elseif (!$rating) {
+        $reviewError = "Couldn't review artist";
+        $openReviewOverlay = true;
+    } elseif ($content === '') {
+        $reviewError = "Couldn't review artist";
+        $openReviewOverlay = true;
+    } elseif (!isset($mysqli) || !($mysqli instanceof mysqli)) {
+        $reviewError = "Couldn't review artist";
+        $openReviewOverlay = true;
+    } else {
+        // Verify the target account exists and is an artist.
+        $artistCheckStmt = $mysqli->prepare('SELECT account_id FROM accounts WHERE account_id = ? AND role = ? LIMIT 1');
+
+        if (!$artistCheckStmt) {
+            $reviewError = "Couldn't review artist";
+            $openReviewOverlay = true;
+        } else {
+            $artistRole = 'artist';
+            $artistCheckStmt->bind_param('is', $targetArtistId, $artistRole);
+            $artistCheckStmt->execute();
+            $artistExists = $artistCheckStmt->get_result()->fetch_row() !== null;
+            $artistCheckStmt->close();
+
+            if (!$artistExists) {
+                $reviewError = "Couldn't review artist";
+                $openReviewOverlay = true;
+            }
+        }
+    }
+
+    if ($reviewError === '') {
+        $title = 'Artist Review';
+        $findStmt = $mysqli->prepare('SELECT review_id FROM reviews WHERE reviewer_id = ? AND artist_id = ? LIMIT 1');
+
+        if (!$findStmt) {
+            $reviewError = "Couldn't review artist";
+            $openReviewOverlay = true;
+        } else {
+            $findStmt->bind_param('ii', $reviewerId, $targetArtistId);
+            $findStmt->execute();
+            $existingReview = $findStmt->get_result()->fetch_assoc() ?: null;
+            $findStmt->close();
+
+            if ($existingReview) {
+                $saveStmt = $mysqli->prepare(
+                    'UPDATE reviews
+                     SET title = ?, content = ?, rating = ?, updated_at = CURRENT_TIMESTAMP()
+                     WHERE reviewer_id = ? AND artist_id = ?'
+                );
+                if ($saveStmt) {
+                    $saveStmt->bind_param('ssiii', $title, $content, $rating, $reviewerId, $targetArtistId);
+                }
+            } else {
+                $saveStmt = $mysqli->prepare(
+                    'INSERT INTO reviews (reviewer_id, artist_id, title, content, rating)
+                     VALUES (?, ?, ?, ?, ?)'
+                );
+                if ($saveStmt) {
+                    $saveStmt->bind_param('iissi', $reviewerId, $targetArtistId, $title, $content, $rating);
+                }
+            }
+
+            if (!$saveStmt) {
+                $reviewError = "Couldn't review artist";
+                $openReviewOverlay = true;
+            } else {
+                $ok = $saveStmt->execute();
+                $saveStmt->close();
+
+                if ($ok) {
+                    header('Location: artist-profile.php' . $profileQuery . '#reviews-list');
+                    exit();
+                }
+
+                $reviewError = "Couldn't review artist";
+                $openReviewOverlay = true;
+            }
+        }
+    }
 }
 
 // Get artist details: accounts + artist_profiles
@@ -301,9 +417,9 @@ if ($account_id) {
                 <div id="action-buttons">
                     <?php if ($is_own_profile): ?>
                         <button class="action-btn" id="edit-profile-btn" onclick="window.location.href='artist-settings.php'">Edit Profile</button>
-                    <?php else: ?>
+                    <?php elseif (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
                         <button class="action-btn" id="follow-btn" style="display: none;">Follow</button>
-                        <button class="action-btn" id="message-btn" onclick="window.location.href='messages.php'">Message</button>
+                        <button class="action-btn" id="message-btn" onclick="window.location.href='messages.php?conversation=<?= (int)$account_id ?>'">Message Artist</button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -388,7 +504,7 @@ if ($account_id) {
                     <h3>Reviews</h3>
                 </div>
                 <div class="section-content reviews-content">
-                    <?php if (!$is_own_profile && isset($_SESSION['logged_in'])): ?>
+                    <?php if (!$is_own_profile && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
                         <button id="review-artist-btn">Review Artist</button>
                     <?php endif; ?>
                     <div id="reviews-list">
@@ -467,7 +583,11 @@ if ($account_id) {
                 <h2 style="font-family: 'BBH Hegarty', sans-serif; text-align: left; font-weight: normal;">Review Artist
                 </h2>
 
-                <div id="review-form-content">
+                <form id="review-form-content" method="post" action="artist-profile.php<?= e($profileQuery) ?>">
+                    <input type="hidden" name="submit_review" value="1">
+                    <input type="hidden" name="artist_id" value="<?= (int)$account_id ?>">
+                    <input type="hidden" name="rating" id="review-rating-input" value="<?= (int)$reviewDraftRating ?>">
+
                     <div id="star-rating-container">
                         <div class="star-rating">
                             <span class="rating-star" data-value="1">★</span>
@@ -479,11 +599,15 @@ if ($account_id) {
                     </div>
 
                     <div id="review-text-container">
-                        <textarea id="review-text-input" placeholder="Add review..." rows="6"></textarea>
+                        <textarea id="review-text-input" name="content" placeholder="Add review..." rows="6"><?= e($reviewDraftContent) ?></textarea>
                     </div>
 
-                    <button id="submit-review-btn" class="review-submit-btn">Review Artist</button>
-                </div>
+                    <?php if ($reviewError !== ''): ?>
+                        <p id="review-error" style="color:#b84a4a; margin: 8px 0 0;"><?= e($reviewError) ?></p>
+                    <?php endif; ?>
+
+                    <button type="submit" id="submit-review-btn" class="review-submit-btn">Review Artist</button>
+                </form>
             </div>
         </div>
 
@@ -491,6 +615,79 @@ if ($account_id) {
 
     <!-- Footer Section -->
     <div id="footer-placeholder"></div>
+
+    <script>
+        (function() {
+            const overlay = document.getElementById('review-overlay');
+            const openBtn = document.getElementById('review-artist-btn');
+            const closeBtn = document.getElementById('close-review-modal');
+            const stars = Array.from(document.querySelectorAll('.rating-star'));
+            const ratingInput = document.getElementById('review-rating-input');
+            const reviewForm = document.getElementById('review-form-content');
+            const reviewError = document.getElementById('review-error');
+
+            function setRating(value) {
+                if (!ratingInput) return;
+                ratingInput.value = String(value);
+                stars.forEach(function(star) {
+                    const starVal = Number(star.getAttribute('data-value'));
+                    star.classList.toggle('active', starVal <= value);
+                });
+            }
+
+            if (openBtn && overlay) {
+                openBtn.addEventListener('click', function() {
+                    overlay.classList.add('active');
+                });
+            }
+
+            if (closeBtn && overlay) {
+                closeBtn.addEventListener('click', function() {
+                    overlay.classList.remove('active');
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('active');
+                    }
+                });
+            }
+
+            stars.forEach(function(star) {
+                star.addEventListener('click', function() {
+                    const val = Number(star.getAttribute('data-value'));
+                    setRating(val);
+                });
+            });
+
+            if (ratingInput && ratingInput.value) {
+                setRating(Number(ratingInput.value));
+            }
+
+            if (reviewForm) {
+                reviewForm.addEventListener('submit', function(e) {
+                    const textInput = document.getElementById('review-text-input');
+                    const hasRating = ratingInput && ratingInput.value;
+                    const hasText = textInput && textInput.value.trim().length > 0;
+
+                    if (!hasRating || !hasText) {
+                        e.preventDefault();
+                        if (reviewError) {
+                            reviewError.textContent = "Couldn't review artist";
+                        }
+                    }
+                });
+            }
+
+            <?php if ($openReviewOverlay): ?>
+                if (overlay) {
+                    overlay.classList.add('active');
+                }
+            <?php endif; ?>
+        })();
+    </script>
 </body>
 
 </html>
