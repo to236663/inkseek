@@ -5,6 +5,7 @@ services:
       - "3000:80"
     volumes:
       - .:/var/www/html
+      - ./.env.docker:/var/www/html/.env:ro
     env_file:
       - .env
     depends_on:
@@ -17,15 +18,21 @@ services:
     image: mysql:8.0
     env_file:
       - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     volumes:
       - db_data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d 
+      - ./sql:/docker-entrypoint-initdb.d
     restart: unless-stopped
     networks:
       - inkseek-network
 
 volumes:
   db_data:
+
 
 networks:
   inkseek-network:
