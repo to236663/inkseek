@@ -3,6 +3,32 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+$scriptName = str_replace('\\', '/', (string)($_SERVER['SCRIPT_NAME'] ?? '/components/navbar.php'));
+$appBasePath = rtrim(dirname(dirname($scriptName)), '/');
+
+function app_url(string $path): string
+{
+    global $appBasePath;
+
+    if ($path === '') {
+        return $appBasePath !== '' ? $appBasePath . '/' : '/';
+    }
+
+    if (preg_match('#^(?:https?:)?//#', $path)) {
+        return $path;
+    }
+
+    if ($appBasePath !== '' && str_starts_with($path, $appBasePath . '/')) {
+        return $path;
+    }
+
+    if (str_starts_with($path, '/')) {
+        return ($appBasePath !== '' ? $appBasePath : '') . $path;
+    }
+
+    return ($appBasePath !== '' ? $appBasePath : '') . '/' . ltrim($path, '/');
+}
+
 $defaultProfileImage = '/images/profile photos/User/UP_4.jpg';
 $navProfileImage = $defaultProfileImage;
 $navUsername = (string)($_SESSION['logged_in_username'] ?? 'username');
@@ -69,14 +95,14 @@ if ($navAccessLevel === 'artist' && $artistProfileId > 0) {
 $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-settings.php';
 ?>
 <div id="navbar">
-    <a id="logo-link" href="index.html">
-        <img id="bottle-logo" src="images/logos/inkseeklogomain.png" alt="ink bottle dripping">
+    <a id="logo-link" href="<?= htmlspecialchars(app_url('index.html'), ENT_QUOTES, 'UTF-8') ?>">
+        <img id="bottle-logo" src="<?= htmlspecialchars(app_url('images/logos/inkseeklogomain.png'), ENT_QUOTES, 'UTF-8') ?>" alt="ink bottle dripping">
     </a>
     <div id="center-buttons">
         <div id="center-buttons-group">
-            <a class="navbutton" id="discover-button" href="discover.php">Discover</a>
-            <a class="navbutton" id="about-us-button" href="about-us.html">About Us</a>
-            <a class="navbutton" id="guides-button" href="guides.html">Guides</a>
+            <a class="navbutton" id="discover-button" href="<?= htmlspecialchars(app_url('discover.php'), ENT_QUOTES, 'UTF-8') ?>">Discover</a>
+            <a class="navbutton" id="about-us-button" href="<?= htmlspecialchars(app_url('about-us.html'), ENT_QUOTES, 'UTF-8') ?>">About Us</a>
+            <a class="navbutton" id="guides-button" href="<?= htmlspecialchars(app_url('guides.html'), ENT_QUOTES, 'UTF-8') ?>">Guides</a>
         </div>
     </div>
     <div id="right-buttons">
@@ -85,9 +111,9 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
             <div id="logged-in-profile" class="right-buttons-group" style="display: flex;">
                 <div class="profile-container">
                     <div class="profile-dropdown" onclick="toggleDropdown();">
-                        <a id="profile-link" href="<?= htmlspecialchars($profileHref, ENT_QUOTES, 'UTF-8') ?>">
+                        <a id="profile-link" href="<?= htmlspecialchars(app_url($profileHref), ENT_QUOTES, 'UTF-8') ?>">
                             <img id="nav-profile-pic" class="nav-profile-pic"
-                                src="<?= htmlspecialchars($navProfileImage, ENT_QUOTES, 'UTF-8') ?>"
+                                src="<?= htmlspecialchars(app_url($navProfileImage), ENT_QUOTES, 'UTF-8') ?>"
                                 alt="Profile">
                         </a>
                         <div class="dropdown-arrow"></div>
@@ -101,20 +127,20 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
                             </p>
                         </div>
 
-                        <a href="<?= htmlspecialchars($settingsHref, ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
-                            <img src="images/favicons/settings.png" class="dropdown-icon-img" alt="Settings">
+                        <a href="<?= htmlspecialchars(app_url($settingsHref), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
+                            <img src="<?= htmlspecialchars(app_url('images/favicons/settings.png'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-icon-img" alt="Settings">
                             <span>Account Settings</span>
                         </a>
-                        <a href="messages.php" class="dropdown-item">
-                            <img src="images/favicons/messages.png" class="dropdown-icon-img" alt="Messages">
+                        <a href="<?= htmlspecialchars(app_url('messages.php'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
+                            <img src="<?= htmlspecialchars(app_url('images/favicons/messages.png'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-icon-img" alt="Messages">
                             <span>Messages</span>
                         </a>
-                        <a href="discover.php" class="dropdown-item">
-                            <img src="images/favicons/search.png" class="dropdown-icon-img" alt="Search">
+                        <a href="<?= htmlspecialchars(app_url('discover.php'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
+                            <img src="<?= htmlspecialchars(app_url('images/favicons/search.png'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-icon-img" alt="Search">
                             <span>Search</span>
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="logout.php" class="dropdown-item">
+                        <a href="<?= htmlspecialchars(app_url('logout.php'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
                             <span>Log Out</span>
                         </a>
                     </div>
@@ -123,8 +149,8 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
 
         <?php else: ?>
             <div id="logged-out-buttons" class="right-buttons-group">
-                <a class="navbutton" id="login" href="login.php">Log In</a>
-                <a class="navbutton" id="create-account" href="create-account.php">Create Account</a>
+                <a class="navbutton" id="login" href="<?= htmlspecialchars(app_url('login.php'), ENT_QUOTES, 'UTF-8') ?>">Log In</a>
+                <a class="navbutton" id="create-account" href="<?= htmlspecialchars(app_url('create-account.php'), ENT_QUOTES, 'UTF-8') ?>">Create Account</a>
             </div>
         <?php endif; ?>
 

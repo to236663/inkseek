@@ -55,10 +55,23 @@
     gap: 12px;
 }
 
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
 .action-icon {
     width: 24px;
     height: auto;
     cursor: pointer;
+}
+
+.action-button:disabled .action-icon {
+    cursor: default;
 }
 
 .three-dots {

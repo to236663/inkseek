@@ -27,8 +27,9 @@ function logout() {
     forms.forEach(form => form.reset());
 
     // Redirect to logout backend (destroys session) and stay on current page
+    const pathPrefix = window.location.pathname.includes('/guides/') ? '../' : '';
     const currentPath = window.location.pathname.substring(1) || 'index.html';
-    window.location.href = 'logout.php?redirect=' + encodeURIComponent(currentPath);
+    window.location.href = pathPrefix + 'logout.php?redirect=' + encodeURIComponent(currentPath);
 }
 
 // This app now uses PHP sessions for account type changes.
@@ -47,21 +48,6 @@ document.addEventListener('click', function (event) {
 });
 
 function initializePageFeatures() {
-    // Image view page bookmark icon toggles only local UI state.
-    const bookmarkIcon = document.getElementById('bookmark-icon');
-    if (bookmarkIcon) {
-        bookmarkIcon.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (this.src.includes('bookmark-clicked')) {
-                this.src = 'images/favicons/bookmark.png';
-            } else {
-                this.src = 'images/favicons/bookmark-clicked.png';
-            }
-        });
-    }
-
     if (!window.location.pathname.includes('artist-profile.php')) {
         return;
     }

@@ -189,7 +189,7 @@ if ($account) {
                 <?php if ($account && !empty($bookmarkedTattoos)): ?>
                     <?php foreach ($bookmarkedTattoos as $bookmark): ?>
                         <div class="bookmark-item<?php echo get_aspect_ratio_class($bookmark['aspect_ratio'] ?? ''); ?>">
-                            <a href="<?php echo 'tattoos/' . (int)$bookmark['tattoo_id']; ?>">
+                            <a href="<?php echo 'tattoos.php?tattoo_id=' . (int)$bookmark['tattoo_id']; ?>">
                                 <img src="<?php echo e($bookmark['image_path']); ?>" alt="<?php echo e($bookmark['title'] ?: 'Bookmarked tattoo'); ?>">
                             </a>
                         </div>
