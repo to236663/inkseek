@@ -40,13 +40,13 @@ function footer_app_url(string $path): string
     </ul>
     <ul>
         <li>
-            <a href="#">Instagram</a>
+            <a href="https://instagram.com">Instagram</a>
         </li>
         <li>
-            <a href="#">TikTok</a>
+            <a href="https://tiktok.com">TikTok</a>
         </li>
         <li>
-            <a href="#">Facebook</a>
+            <a href="https://facebook.com">Facebook</a>
         </li>
     </ul>
     <ul>

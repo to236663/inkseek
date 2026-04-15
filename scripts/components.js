@@ -39,9 +39,9 @@ async function loadComponents() {
         `${pathPrefix}components/footer.php`,
         'components/footer.php',
         '../components/footer.php',
-        `${pathPrefix}components/footer.html`,
-        'components/footer.html',
-        '../components/footer.html'
+        `${pathPrefix}components/footer.php`,
+        'components/footer.php',
+        '../components/footer.php'
     ]);
 
     // Initialize page-specific features
