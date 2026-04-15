@@ -94,17 +94,48 @@ function initializePageFeatures() {
     const reviewArtistBtn = document.getElementById('review-artist-btn');
     const reviewOverlay = document.getElementById('review-overlay');
     const closeReviewBtn = document.getElementById('close-review-modal');
+    const reviewForm = document.getElementById('review-form-content');
+    const reviewRatingSelect = document.getElementById('review-rating-select');
+    const reviewInput = document.getElementById('review-text-input');
+    const reviewError = document.getElementById('review-error');
     const submitReviewBtn = document.getElementById('submit-review-btn');
-    const ratingStars = document.querySelectorAll('.rating-star');
-    let selectedRating = 0;
+    const invalidRatingClass = 'is-invalid-rating';
+
+    function showReviewError(message) {
+        if (reviewError) {
+            reviewError.textContent = message;
+            reviewError.style.display = '';
+        }
+    }
+
+    function clearReviewError() {
+        if (reviewError) {
+            reviewError.textContent = '';
+            reviewError.style.display = 'none';
+        }
+    }
+
+    function setRatingValidationState(isInvalid) {
+        if (!reviewRatingSelect) {
+            return;
+        }
+
+        if (isInvalid) {
+            reviewRatingSelect.classList.add(invalidRatingClass);
+            reviewRatingSelect.setAttribute('aria-invalid', 'true');
+        } else {
+            reviewRatingSelect.classList.remove(invalidRatingClass);
+            reviewRatingSelect.removeAttribute('aria-invalid');
+        }
+    }
 
     if (reviewArtistBtn) {
         reviewArtistBtn.addEventListener('click', function () {
             if (reviewOverlay) {
                 reviewOverlay.classList.add('active');
-                selectedRating = 0;
-                ratingStars.forEach(star => star.classList.remove('active'));
             }
+            clearReviewError();
+            setRatingValidationState(false);
         });
     }
 
@@ -113,12 +144,8 @@ function initializePageFeatures() {
             if (reviewOverlay) {
                 reviewOverlay.classList.remove('active');
             }
-            const reviewInput = document.getElementById('review-text-input');
-            if (reviewInput) {
-                reviewInput.value = '';
-            }
-            selectedRating = 0;
-            ratingStars.forEach(star => star.classList.remove('active'));
+            clearReviewError();
+            setRatingValidationState(false);
         });
     }
 
@@ -126,68 +153,38 @@ function initializePageFeatures() {
         reviewOverlay.addEventListener('click', function (e) {
             if (e.target === reviewOverlay) {
                 reviewOverlay.classList.remove('active');
-                const reviewInput = document.getElementById('review-text-input');
-                if (reviewInput) {
-                    reviewInput.value = '';
-                }
-                selectedRating = 0;
-                ratingStars.forEach(star => star.classList.remove('active'));
+                clearReviewError();
+                setRatingValidationState(false);
             }
         });
     }
 
-    ratingStars.forEach(star => {
-        star.addEventListener('click', function () {
-            selectedRating = parseInt(this.getAttribute('data-value'), 10);
-            ratingStars.forEach((s, index) => {
-                if (index < selectedRating) {
-                    s.classList.add('active');
-                    s.style.color = '#FFD700';
-                } else {
-                    s.classList.remove('active');
-                    s.style.color = '#D7D7D7';
-                }
-            });
-        });
-
-        star.addEventListener('mouseenter', function () {
-            const hoverValue = parseInt(this.getAttribute('data-value'), 10);
-            ratingStars.forEach((s, index) => {
-                s.style.color = index < hoverValue ? '#FFD700' : '#D7D7D7';
-            });
-        });
-    });
-
-    const starRating = document.querySelector('.star-rating');
-    if (starRating) {
-        starRating.addEventListener('mouseleave', function () {
-            ratingStars.forEach((s, index) => {
-                s.style.color = index < selectedRating ? '#FFD700' : '#D7D7D7';
-            });
+    if (reviewRatingSelect) {
+        reviewRatingSelect.addEventListener('change', function () {
+            const hasRating = Boolean(reviewRatingSelect.value);
+            setRatingValidationState(!hasRating);
         });
     }
 
-    if (submitReviewBtn) {
-        submitReviewBtn.addEventListener('click', function () {
-            if (selectedRating === 0) {
-                alert('Please select a star rating');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function (e) {
+            const hasRating = Boolean(reviewRatingSelect && reviewRatingSelect.value);
+            const hasText = Boolean(reviewInput && reviewInput.value.trim().length > 0);
+
+            setRatingValidationState(!hasRating);
+
+            if (!hasRating || !hasText) {
+                e.preventDefault();
+                showReviewError("Couldn't review artist");
                 return;
             }
 
-            if (reviewOverlay) {
-                reviewOverlay.classList.remove('active');
-            }
+            clearReviewError();
 
-            const reviewInput = document.getElementById('review-text-input');
-            if (reviewInput) {
-                reviewInput.value = '';
+            if (submitReviewBtn) {
+                submitReviewBtn.disabled = true;
+                submitReviewBtn.textContent = 'Submitting...';
             }
-
-            selectedRating = 0;
-            ratingStars.forEach(star => {
-                star.classList.remove('active');
-                star.style.color = '#D7D7D7';
-            });
         });
     }
 }

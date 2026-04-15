@@ -654,26 +654,37 @@
     gap: 25px;
 }
 
-#star-rating-container {
+#rating-select-container {
     text-align: left;
 }
 
-.star-rating {
-    display: flex;
-    gap: 8px;
+#rating-select-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: "Zain", sans-serif;
+    font-size: 16px;
+    color: #000;
 }
 
-.rating-star {
-    font-size: 40px;
-    color: #D7D7D7;
-    cursor: pointer;
-    transition: color 0.2s ease, transform 0.2s ease;
+#review-rating-select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 2px solid #000;
+    border-radius: 12px;
+    font-family: "Zain", sans-serif;
+    outline: none;
+    background-color: #fff;
+    box-sizing: border-box;
 }
 
-.rating-star:hover,
-.rating-star.active {
-    color: #FFD700;
-    transform: scale(1.1);
+#review-rating-select:focus {
+    border-color: #C1272D;
+}
+
+#review-rating-select.is-invalid-rating {
+    border-color: #C1272D;
+    box-shadow: 0 0 0 2px rgba(193, 39, 45, 0.15);
 }
 
 #review-text-container textarea {

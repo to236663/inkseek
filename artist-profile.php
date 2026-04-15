@@ -708,48 +708,6 @@ if ($account_id && isset($mysqli) && $mysqli instanceof mysqli) {
     <script>
         (function() {
             const overlay = document.getElementById('review-overlay');
-            const openBtn = document.getElementById('review-artist-btn');
-            const closeBtn = document.getElementById('close-review-modal');
-            const reviewForm = document.getElementById('review-form-content');
-            const reviewError = document.getElementById('review-error');
-
-            if (openBtn && overlay) {
-                openBtn.addEventListener('click', function() {
-                    overlay.classList.add('active');
-                });
-            }
-
-            if (closeBtn && overlay) {
-                closeBtn.addEventListener('click', function() {
-                    overlay.classList.remove('active');
-                });
-            }
-
-            if (overlay) {
-                overlay.addEventListener('click', function(e) {
-                    if (e.target === overlay) {
-                        overlay.classList.remove('active');
-                    }
-                });
-            }
-
-            if (reviewForm) {
-                reviewForm.addEventListener('submit', function(e) {
-                    const ratingSelect = document.getElementById('review-rating-select');
-                    const textInput = document.getElementById('review-text-input');
-                    const hasRating = ratingSelect && ratingSelect.value;
-                    const hasText = textInput && textInput.value.trim().length > 0;
-
-                    if (!hasRating || !hasText) {
-                        e.preventDefault();
-                        const errEl = document.getElementById('review-error');
-                        if (errEl) {
-                            errEl.textContent = "Couldn't review artist";
-                            errEl.style.display = '';
-                        }
-                    }
-                });
-            }
 
             <?php if ($openReviewOverlay): ?>
                 if (overlay) {
