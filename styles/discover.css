@@ -55,6 +55,7 @@
     right: 8px;
     background: none;
     border: none;
+    border-radius: 0px;
     cursor: pointer;
     padding: 6px;
     display: flex;
@@ -70,7 +71,6 @@
 #filter-button img {
     width: 24px;
     height: 24px;
-    object-fit: contain;
 }
 
 /* Filter Overlay */

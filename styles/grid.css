@@ -6,7 +6,7 @@
             margin: 10px 112px;
         }
 
-        #grid-item {
+        .grid-item {
             width: 100%;
             height: auto;
             justify-items: center;
@@ -16,5 +16,8 @@
             width: 100%;
             height: auto;
             display: block;
+        }
+
+        img.grid-item {
             border-radius: 12px;
         }
