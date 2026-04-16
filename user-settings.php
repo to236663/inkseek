@@ -12,11 +12,6 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-if (!isset($mysqli) || !($mysqli instanceof mysqli)) {
-    http_response_code(500);
-    exit('Something went wrong connecting to the database. Please try again later.');
-}
-
 $account_id = (int)($_SESSION['logged_in_account_id'] ?? 0);
 $success = isset($_GET['saved']) && $_GET['saved'] === '1';
 $error_message = '';
@@ -59,34 +54,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = 'Please enter a valid email address.';
     } else {
         $username_check = $mysqli->prepare('SELECT account_id FROM accounts WHERE username = ? AND account_id <> ? LIMIT 1');
-        if (!$username_check) {
-            error_log('user-settings.php username check prepare failed: ' . $mysqli->error);
-            $error_message = 'Unable to validate username right now. Please try again.';
-        }
-        if ($error_message === '') {
-            $username_check->bind_param('si', $username, $account_id);
-            $username_check->execute();
-            $username_exists = $username_check->get_result()->fetch_assoc();
-            $username_check->close();
-        }
+        $username_check->bind_param('si', $username, $account_id);
+        $username_check->execute();
+        $username_exists = $username_check->get_result()->fetch_assoc();
+        $username_check->close();
 
-        $email_exists = false;
-        if ($error_message === '') {
-            $email_check = $mysqli->prepare('SELECT account_id FROM accounts WHERE email = ? AND account_id <> ? LIMIT 1');
-            if (!$email_check) {
-                error_log('user-settings.php email check prepare failed: ' . $mysqli->error);
-                $error_message = 'Unable to validate email right now. Please try again.';
-            } else {
-                $email_check->bind_param('si', $email, $account_id);
-                $email_check->execute();
-                $email_exists = $email_check->get_result()->fetch_assoc();
-                $email_check->close();
-            }
-        }
+        $email_check = $mysqli->prepare('SELECT account_id FROM accounts WHERE email = ? AND account_id <> ? LIMIT 1');
+        $email_check->bind_param('si', $email, $account_id);
+        $email_check->execute();
+        $email_exists = $email_check->get_result()->fetch_assoc();
+        $email_check->close();
 
-        if ($error_message !== '') {
-            // Keep validation/DB errors in $error_message for inline display.
-        } elseif ($username_exists) {
+        if ($username_exists) {
             $error_message = 'That username is already taken. Please choose another.';
         } elseif ($email_exists) {
             $error_message = 'That email is already in use. Please choose another.';
