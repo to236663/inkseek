@@ -183,7 +183,6 @@ $pageTitle = $selectedTattoo && !empty($selectedTattoo['title'])
                                         class="action-icon">
                                 </button>
                             <?php endif; ?>
-                            <span class="three-dots">...</span>
                         </div>
                     </div>
 
