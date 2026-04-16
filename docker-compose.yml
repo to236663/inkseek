@@ -4,8 +4,13 @@ services:
     ports:
       - "3000:80"
     volumes:
-      - .:/var/www/html
-      - ./.env.docker:/var/www/html/.env:ro
+      - type: bind
+        source: .
+        target: /var/www/html
+      - type: bind
+        source: ./.env.docker
+        target: /var/www/html/.env
+        read_only: true
     env_file:
       - .env
     depends_on:
@@ -32,7 +37,6 @@ services:
 
 volumes:
   db_data:
-
 
 networks:
   inkseek-network:

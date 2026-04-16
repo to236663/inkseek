@@ -98,6 +98,7 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
     <a id="logo-link" href="<?= htmlspecialchars(app_url('index.html'), ENT_QUOTES, 'UTF-8') ?>">
         <img id="bottle-logo" src="<?= htmlspecialchars(app_url('images/logos/inkseeklogomain.png'), ENT_QUOTES, 'UTF-8') ?>" alt="ink bottle dripping">
     </a>
+
     <div id="center-buttons">
         <div id="center-buttons-group">
             <a class="navbutton" id="discover-button" href="<?= htmlspecialchars(app_url('discover.php'), ENT_QUOTES, 'UTF-8') ?>">Discover</a>
@@ -105,8 +106,8 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
             <a class="navbutton" id="guides-button" href="<?= htmlspecialchars(app_url('guides.html'), ENT_QUOTES, 'UTF-8') ?>">Guides</a>
         </div>
     </div>
-    <div id="right-buttons">
 
+    <div id="right-buttons">
         <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
             <div id="logged-in-profile" class="right-buttons-group" style="display: flex;">
                 <div class="profile-container">
@@ -126,7 +127,6 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
                                 <?= $navAccessLevel === 'artist' ? 'Artist Account' : 'Personal Account' ?>
                             </p>
                         </div>
-
                         <a href="<?= htmlspecialchars(app_url($settingsHref), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-item">
                             <img src="<?= htmlspecialchars(app_url('images/favicons/settings.png'), ENT_QUOTES, 'UTF-8') ?>" class="dropdown-icon-img" alt="Settings">
                             <span>Account Settings</span>
@@ -146,13 +146,29 @@ $settingsHref = $navAccessLevel === 'artist' ? 'artist-settings.php' : 'user-set
                     </div>
                 </div>
             </div>
-
         <?php else: ?>
             <div id="logged-out-buttons" class="right-buttons-group">
                 <a class="navbutton" id="login" href="<?= htmlspecialchars(app_url('login.php'), ENT_QUOTES, 'UTF-8') ?>">Log In</a>
                 <a class="navbutton" id="create-account" href="<?= htmlspecialchars(app_url('create-account.php'), ENT_QUOTES, 'UTF-8') ?>">Create Account</a>
             </div>
         <?php endif; ?>
+    </div>
 
+    <button id="mobile-nav-toggle" type="button" onclick="toggleMobileNav();" aria-expanded="false" aria-controls="mobile-nav-menu" aria-label="Open mobile navigation menu">
+        <img class="mobile-nav-icon" src="<?= htmlspecialchars(app_url('images/favicons/hamburgericon.png'), ENT_QUOTES, 'UTF-8') ?>" alt="Open menu">
+    </button>
+
+    <div id="mobile-nav-menu" aria-hidden="true">
+        <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('discover.php'), ENT_QUOTES, 'UTF-8') ?>">Discover</a>
+        <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('about-us.html'), ENT_QUOTES, 'UTF-8') ?>">About Us</a>
+        <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('guides.html'), ENT_QUOTES, 'UTF-8') ?>">Guides</a>
+        <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true): ?>
+            <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url($profileHref), ENT_QUOTES, 'UTF-8') ?>">Profile</a>
+            <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url($settingsHref), ENT_QUOTES, 'UTF-8') ?>">Settings</a>
+            <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('messages.php'), ENT_QUOTES, 'UTF-8') ?>">Messages</a>
+        <?php else: ?>
+            <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('login.php'), ENT_QUOTES, 'UTF-8') ?>">Log In</a>
+            <a class="mobile-nav-link" href="<?= htmlspecialchars(app_url('create-account.php'), ENT_QUOTES, 'UTF-8') ?>">Create Account</a>
+        <?php endif; ?>
     </div>
 </div>

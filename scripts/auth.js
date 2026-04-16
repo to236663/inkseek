@@ -6,6 +6,16 @@ function toggleDropdown() {
     }
 }
 
+function toggleMobileNav() {
+    const mobileNav = document.getElementById('mobile-nav-menu');
+    const toggleButton = document.getElementById('mobile-nav-toggle');
+    if (mobileNav && toggleButton) {
+        const isOpen = mobileNav.classList.toggle('show');
+        toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        mobileNav.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    }
+}
+
 // Clear all UI state and redirect to logout backend.
 function logout() {
     // Close any open dropdowns or modals
@@ -41,9 +51,17 @@ function convertAccount() {
 document.addEventListener('click', function (event) {
     const dropdown = document.getElementById('dropdown-menu');
     const profileContainer = document.querySelector('.profile-container');
+    const mobileNav = document.getElementById('mobile-nav-menu');
+    const mobileToggle = document.getElementById('mobile-nav-toggle');
 
     if (dropdown && profileContainer && !profileContainer.contains(event.target)) {
         dropdown.classList.remove('show');
+    }
+
+    if (mobileNav && mobileToggle && !mobileNav.contains(event.target) && !mobileToggle.contains(event.target)) {
+        mobileNav.classList.remove('show');
+        mobileToggle.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
     }
 });
 
