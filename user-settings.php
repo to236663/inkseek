@@ -16,7 +16,20 @@ $account_id = (int)($_SESSION['logged_in_account_id'] ?? 0);
 $success = isset($_GET['saved']) && $_GET['saved'] === '1';
 $error_message = '';
 
-$account_stmt = $mysqli->prepare('SELECT first_name, last_name, username, email, profile_image_path, role FROM accounts WHERE account_id = ? LIMIT 1');
+$account_stmt = $mysqli->prepare(
+    'SELECT a.first_name, a.last_name, a.username, a.email, a.profile_image_path, a.role, ap.about
+     FROM accounts a
+     LEFT JOIN artist_profiles ap ON ap.account_id = a.account_id
+     WHERE a.account_id = ?
+     LIMIT 1'
+);
+
+if (!$account_stmt) {
+    error_log('user-settings.php account query prepare failed: ' . $mysqli->error);
+    http_response_code(500);
+    exit('Something went wrong loading your profile. Please try again later.');
+}
+
 $account_stmt->bind_param('i', $account_id);
 $account_stmt->execute();
 $account_result = $account_stmt->get_result();
@@ -33,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $last_name = trim($_POST['last_name'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
+    $about = trim($_POST['about'] ?? '');
 
     if ($first_name === '' || $last_name === '' || $username === '' || $email === '') {
         $error_message = 'First name, last name, username, and email are required.';
@@ -57,17 +71,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error_message = 'That email is already in use. Please choose another.';
         } else {
             $update_stmt = $mysqli->prepare('UPDATE accounts SET first_name = ?, last_name = ?, username = ?, email = ? WHERE account_id = ?');
-            $update_stmt->bind_param('ssssi', $first_name, $last_name, $username, $email, $account_id);
-            $update_stmt->execute();
-            $update_stmt->close();
+            if (!$update_stmt) {
+                error_log('user-settings.php account update prepare failed: ' . $mysqli->error);
+                $error_message = 'Unable to save profile changes right now. Please try again.';
+            } else {
+                $update_stmt->bind_param('ssssi', $first_name, $last_name, $username, $email, $account_id);
+                $update_stmt->execute();
+                $update_stmt->close();
+            }
 
-            $_SESSION['logged_in_first_name'] = $first_name;
-            $_SESSION['logged_in_last_name'] = $last_name;
-            $_SESSION['logged_in_username'] = $username;
-            $_SESSION['logged_in_email'] = $email;
+            if ($error_message === '') {
+                $about_value = $about === '' ? null : $about;
+                $about_stmt = $mysqli->prepare(
+                    'INSERT INTO artist_profiles (account_id, about)
+                     VALUES (?, ?)
+                     ON DUPLICATE KEY UPDATE about = VALUES(about)'
+                );
 
-            header('Location: user-settings.php?saved=1');
-            exit();
+                if (!$about_stmt) {
+                    error_log('user-settings.php about upsert prepare failed: ' . $mysqli->error);
+                    $error_message = 'Unable to save your about section right now. Please try again.';
+                } else {
+                    $about_stmt->bind_param('is', $account_id, $about_value);
+                    $about_stmt->execute();
+                    $about_stmt->close();
+                }
+            }
+
+            if ($error_message !== '') {
+                $account_row['first_name'] = $first_name;
+                $account_row['last_name'] = $last_name;
+                $account_row['username'] = $username;
+                $account_row['email'] = $email;
+                $account_row['about'] = $about;
+            } else {
+                $_SESSION['logged_in_first_name'] = $first_name;
+                $_SESSION['logged_in_last_name'] = $last_name;
+                $_SESSION['logged_in_username'] = $username;
+                $_SESSION['logged_in_email'] = $email;
+
+                header('Location: user-settings.php?saved=1');
+                exit();
+            }
         }
     }
 
@@ -76,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $account_row['last_name'] = $last_name;
     $account_row['username'] = $username;
     $account_row['email'] = $email;
+    $account_row['about'] = $about;
 }
 ?>
 <!DOCTYPE html>
@@ -132,6 +178,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <label for="email">Email</label>
                     <input type="text" id="email" name="email" value="<?= e($account_row['email'] ?? '') ?>" required>
+
+                    <label for="about">About</label>
+                    <input type="text" id="about" name="about" value="<?= e($account_row['about'] ?? '') ?>">
 
                     <button type="submit" id="save-changes-btn">Save Changes</button>
                 </form>

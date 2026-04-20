@@ -1,4 +1,25 @@
 // Load navbar and footer components
+function toggleMobileNav() {
+    const menu = document.getElementById('mobile-nav-menu');
+    const toggle = document.getElementById('mobile-nav-toggle');
+    const isOpen = menu.classList.contains('show');
+    
+    menu.classList.toggle('show');
+    menu.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
+    toggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobile-nav-menu');
+    const toggle = document.getElementById('mobile-nav-toggle');
+    if (menu && toggle && !menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('show');
+        menu.setAttribute('aria-hidden', 'true');
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+}); 
+
 async function loadComponent(elementId, filePaths) {
     const paths = Array.isArray(filePaths) ? filePaths : [filePaths];
 
