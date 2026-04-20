@@ -8,7 +8,7 @@ services:
         source: .
         target: /var/www/html
       - type: bind
-        source: ./.env.docker
+        source: ./.env
         target: /var/www/html/.env
         read_only: true
     env_file:
@@ -37,6 +37,7 @@ services:
 
 volumes:
   db_data:
+
 
 networks:
   inkseek-network:
