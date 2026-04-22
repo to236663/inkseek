@@ -246,7 +246,7 @@ foreach ($days as $day) {
             <!-- Profile Picture Section -->
             <div id="profile-picture-section">
                 <div id="settings-profile-picture">
-                    <img src="<?= e($artist_row['profile_image_path'] ?: 'images/profile photos/Artist/Profile_1.jpg') ?>" alt="Profile Picture">
+                    <img src="<?= e($artist_row['profile_image_path'] ?: 'images/profilephotos/defaultProfile.jpg') ?>" alt="Profile Picture">
                 </div>
                 <button id="edit-picture-btn">Edit Profile Picture</button>
             </div>

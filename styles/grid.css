@@ -6,11 +6,7 @@
     margin: 10px 112px;
 }
 
-<<<<<<< HEAD
-#grid-item {
-=======
 .grid-item {
->>>>>>> f779c22cd425730de9a5ba79929b1764b0ca80f7
     width: 100%;
     height: auto;
     justify-items: center;
@@ -31,13 +27,6 @@ img {
     }
 }
 
-<<<<<<< HEAD
-=======
-img.grid-item {
-    border-radius: 12px;
-}
-
->>>>>>> f779c22cd425730de9a5ba79929b1764b0ca80f7
 /* Mobile screens */
 @media (max-width: 480px) {
     #grid-container {

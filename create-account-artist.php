@@ -120,10 +120,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mysqli->begin_transaction();
 
                 try {
+                    $profile_image_path = 'images/profilephotos/defaultProfile.jpg';
                     $insert_stmt = $mysqli->prepare(
-                        'INSERT INTO accounts (role, username, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?, ?)'
+                        'INSERT INTO accounts (role, username, first_name, last_name, email, password, profile_image_path) VALUES (?, ?, ?, ?, ?, ?, ?)'
                     );
-                    $insert_stmt->bind_param('ssssss', $role, $form['username'], $form['first_name'], $form['last_name'], $form['email'], $password);
+                    $insert_stmt->bind_param('sssssss', $role, $form['username'], $form['first_name'], $form['last_name'], $form['email'], $password, $profile_image_path);
                     $insert_stmt->execute();
                     $account_id = (int)$insert_stmt->insert_id;
                     $insert_stmt->close();

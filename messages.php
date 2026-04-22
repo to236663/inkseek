@@ -196,7 +196,7 @@ if (isset($mysqli) && $mysqli instanceof mysqli) {
             <?php else: ?>
                 <?php foreach ($conversations as $conv):
                     $isActive = (int)$conv['account_id'] === $conversationWithId;
-                    $avatar   = $conv['profile_image_path'] ?: 'images/profile photos/User/UP_4.jpg';
+                    $avatar   = $conv['profile_image_path'] ?: 'images/profilephotos/defaultProfile.jpg';
                 ?>
                     <a class="user-item<?= $isActive ? ' active' : '' ?>"
                         href="messages.php?conversation=<?= (int)$conv['account_id'] ?>">

@@ -73,14 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // All checks passed so insert the new account into the database
                 // role is set to "user" automatically since this is the regular user form
-                $insert_stmt = $mysqli->prepare("INSERT INTO accounts (role, username, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+                $insert_stmt = $mysqli->prepare("INSERT INTO accounts (role, username, first_name, last_name, email, password, profile_image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
                 // Bind all the values to the "?" placeholders
-                // "ssssss" means all 6 values are strings
-                $insert_stmt->bind_param("ssssss", $role, $username, $first_name, $last_name, $email, $password);
+                // "sssssss" means all 7 values are strings
+                $insert_stmt->bind_param("sssssss", $role, $username, $first_name, $last_name, $email, $password, $profile_image_path);
 
                 // Set the role to "user" since this is the regular account creation page
                 $role = "user";
+
+                // Set the default profile image
+                $profile_image_path = "images/profilephotos/defaultProfile.jpg";
 
                 // Execute the insert query to save the new account
                 $insert_stmt->execute();

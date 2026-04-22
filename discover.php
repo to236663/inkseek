@@ -8,6 +8,13 @@ $selectedStyles = array_values(array_unique(array_filter(
     array_map(static fn($style) => normalize_style_key((string)$style), (array)($_GET['style'] ?? [])),
     static fn($style) => $style !== ''
 )));
+$locationQuery = trim((string)($_GET['location'] ?? ''));
+$priceMin = isset($_GET['price-min']) ? (float)$_GET['price-min'] : null;
+$priceMax = isset($_GET['price-max']) ? (float)$_GET['price-max'] : null;
+$selectedRatings = array_values(array_unique(array_filter(
+    array_map('intval', (array)($_GET['rating'] ?? [])),
+    static fn($rating) => $rating >= 1 && $rating <= 5
+)));
 
 function e($value)
 {
@@ -24,6 +31,9 @@ function get_search_score(array $tattoo, string $searchQuery): int
     $title = strtolower((string)($tattoo['title'] ?? ''));
     $description = strtolower((string)($tattoo['description'] ?? ''));
     $styleNames = strtolower((string)($tattoo['style_names'] ?? ''));
+    $artistName = strtolower(trim((string)($tattoo['first_name'] ?? '') . ' ' . (string)($tattoo['last_name'] ?? '')));
+    $username = strtolower((string)($tattoo['username'] ?? ''));
+    $location = strtolower(trim((string)($tattoo['city'] ?? '') . ' ' . (string)($tattoo['state'] ?? '')));
     $score = 0;
 
     if ($title === $needle) {
@@ -42,6 +52,18 @@ function get_search_score(array $tattoo, string $searchQuery): int
 
     if ($description !== '' && str_contains($description, $needle)) {
         $score += 25;
+    }
+
+    if ($artistName !== '' && str_contains($artistName, $needle)) {
+        $score += 60;
+    }
+
+    if ($username !== '' && str_contains($username, $needle)) {
+        $score += 40;
+    }
+
+    if ($location !== '' && str_contains($location, $needle)) {
+        $score += 30;
     }
 
     return $score;
@@ -76,11 +98,20 @@ if ($db_ready && $mysqli instanceof mysqli) {
         'SELECT t.tattoo_id, t.image_path, t.title, t.description,
                 GROUP_CONCAT(DISTINCT st.tag_id ORDER BY st.tag_id) AS style_ids,
                 GROUP_CONCAT(DISTINCT st.tag_name ORDER BY st.tag_name SEPARATOR ", ") AS style_names,
-                GROUP_CONCAT(DISTINCT st.tag_name ORDER BY st.tag_name SEPARATOR "||") AS style_names_raw
+                GROUP_CONCAT(DISTINCT st.tag_name ORDER BY st.tag_name SEPARATOR "||") AS style_names_raw,
+                a.username, a.first_name, a.last_name,
+                ap.min_rate, ap.hourly_rate, ap.day_rate,
+                md.city, md.state,
+                AVG(r.rating) AS avg_rating
          FROM tattoos t
+         INNER JOIN accounts a ON a.account_id = t.artist_id
+         LEFT JOIN artist_profiles ap ON ap.account_id = a.account_id
+         LEFT JOIN map_data md ON md.artist_profile_id = ap.profile_id
+         LEFT JOIN reviews r ON r.artist_id = a.account_id
          LEFT JOIN tattoo_style_tag tst ON tst.tattoo_id = t.tattoo_id
          LEFT JOIN style_tags st ON st.tag_id = tst.style_tag_id
-         GROUP BY t.tattoo_id, t.image_path, t.title, t.description
+         GROUP BY t.tattoo_id, t.image_path, t.title, t.description, a.username, a.first_name, a.last_name,
+                  ap.min_rate, ap.hourly_rate, ap.day_rate, md.city, md.state
          ORDER BY t.tattoo_id DESC'
     );
 
@@ -105,6 +136,52 @@ if ($db_ready && $mysqli instanceof mysqli) {
 
             if (!empty($selectedStyles) && empty(array_intersect($selectedStyles, $rowStyleKeys))) {
                 continue;
+            }
+
+            // Location filter
+            if ($locationQuery !== '') {
+                $locationStr = strtolower(trim((string)($row['city'] ?? '') . ' ' . (string)($row['state'] ?? '')));
+                if ($locationStr === '' || !str_contains($locationStr, strtolower($locationQuery))) {
+                    continue;
+                }
+            }
+
+            // Price filter
+            if ($priceMin !== null || $priceMax !== null) {
+                $rates = array_filter([
+                    (float)($row['min_rate'] ?? 0),
+                    (float)($row['hourly_rate'] ?? 0),
+                    (float)($row['day_rate'] ?? 0)
+                ], static fn($rate) => $rate > 0);
+
+                if (empty($rates)) {
+                    continue; // No rates available, skip
+                }
+
+                $minRate = min($rates);
+                $maxRate = max($rates);
+
+                if ($priceMin !== null && $maxRate < $priceMin) {
+                    continue;
+                }
+                if ($priceMax !== null && $minRate > $priceMax) {
+                    continue;
+                }
+            }
+
+            // Rating filter
+            if (!empty($selectedRatings)) {
+                $avgRating = (float)($row['avg_rating'] ?? 0);
+                $matchesRating = false;
+                foreach ($selectedRatings as $minRating) {
+                    if ($avgRating >= $minRating) {
+                        $matchesRating = true;
+                        break;
+                    }
+                }
+                if (!$matchesRating) {
+                    continue;
+                }
             }
 
             $row['style_ids'] = $rowStyleIds;
@@ -194,7 +271,7 @@ if ($db_ready && $mysqli instanceof mysqli) {
                     <h3>Location</h3>
                     <div class="filter-options">
                         <label for="location-input" class="visually-hidden">Location</label>
-                        <input type="text" id="location-input" name="location" placeholder="Enter location...">
+                        <input type="text" id="location-input" name="location" placeholder="Enter location..." value="<?php echo e($locationQuery); ?>">
                     </div>
                 </div>
 
@@ -204,12 +281,12 @@ if ($db_ready && $mysqli instanceof mysqli) {
                     <div class="filter-options price-range">
                         <div class="price-input">
                             <label for="price-min">Min</label>
-                            <input type="number" id="price-min" name="price-min" placeholder="$0" min="0">
+                            <input type="number" id="price-min" name="price-min" placeholder="$0" min="0" value="<?php echo $priceMin !== null ? e((string)$priceMin) : ''; ?>">
                         </div>
                         <span class="price-separator">-</span>
                         <div class="price-input">
                             <label for="price-max">Max</label>
-                            <input type="number" id="price-max" name="price-max" placeholder="$1000" min="0">
+                            <input type="number" id="price-max" name="price-max" placeholder="$1000" min="0" value="<?php echo $priceMax !== null ? e((string)$priceMax) : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -218,11 +295,11 @@ if ($db_ready && $mysqli instanceof mysqli) {
                 <div class="filter-section">
                     <h3>Star Ratings</h3>
                     <div class="filter-options">
-                        <label><input type="checkbox" name="rating" value="5"> ★★★★★ (5 stars)</label>
-                        <label><input type="checkbox" name="rating" value="4"> ★★★★☆ (4+ stars)</label>
-                        <label><input type="checkbox" name="rating" value="3"> ★★★☆☆ (3+ stars)</label>
-                        <label><input type="checkbox" name="rating" value="2"> ★★☆☆☆ (2+ stars)</label>
-                        <label><input type="checkbox" name="rating" value="1"> ★☆☆☆☆ (1+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="5" <?php echo in_array(5, $selectedRatings) ? 'checked' : ''; ?>> ★★★★★ (5 stars)</label>
+                        <label><input type="checkbox" name="rating" value="4" <?php echo in_array(4, $selectedRatings) ? 'checked' : ''; ?>> ★★★★☆ (4+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="3" <?php echo in_array(3, $selectedRatings) ? 'checked' : ''; ?>> ★★★☆☆ (3+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="2" <?php echo in_array(2, $selectedRatings) ? 'checked' : ''; ?>> ★★☆☆☆ (2+ stars)</label>
+                        <label><input type="checkbox" name="rating" value="1" <?php echo in_array(1, $selectedRatings) ? 'checked' : ''; ?>> ★☆☆☆☆ (1+ stars)</label>
                     </div>
                 </div>
             </div>
@@ -245,7 +322,7 @@ if ($db_ready && $mysqli instanceof mysqli) {
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>No tattoos matched your current search and style filter.</p>
+            <p>No tattoos matched your current search and filter criteria.</p>
         <?php endif; ?>
     </div>
 

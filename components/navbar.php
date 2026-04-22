@@ -29,7 +29,7 @@ function app_url(string $path): string
     return ($appBasePath !== '' ? $appBasePath : '') . '/' . ltrim($path, '/');
 }
 
-$defaultProfileImage = '/images/profile photos/User/UP_4.jpg';
+$defaultProfileImage = '/images/profilephotos/defaultProfile.jpg';
 $navProfileImage = $defaultProfileImage;
 $navUsername = (string)($_SESSION['logged_in_username'] ?? 'username');
 $navAccessLevel = (string)($_SESSION['logged_in_access_level'] ?? 'user');

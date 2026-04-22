@@ -35,11 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Clear all filters
     clearFilters.addEventListener('click', function () {
-        // Uncheck all checkboxes in the overlay (style + currently non-functional filters)
+        // Uncheck all checkboxes in the overlay (style + rating)
         const checkboxes = filterOverlay.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => checkbox.checked = false);
 
-        // Clear text and number inputs (non-functional filters kept for visual parity)
+        // Clear text and number inputs (location, price)
         const textInputs = filterOverlay.querySelectorAll('input[type="text"], input[type="number"]');
         textInputs.forEach(input => input.value = '');
     });
@@ -54,6 +54,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
         styleCheckboxes.forEach(checkbox => {
             params.append('style[]', checkbox.value);
+        });
+
+        // Location
+        const locationInput = filterOverlay.querySelector('input[name="location"]');
+        if (locationInput && locationInput.value.trim() !== '') {
+            params.set('location', locationInput.value.trim());
+        } else {
+            params.delete('location');
+        }
+
+        // Price
+        const priceMinInput = filterOverlay.querySelector('input[name="price-min"]');
+        const priceMaxInput = filterOverlay.querySelector('input[name="price-max"]');
+        if (priceMinInput && priceMinInput.value.trim() !== '') {
+            params.set('price-min', priceMinInput.value.trim());
+        } else {
+            params.delete('price-min');
+        }
+        if (priceMaxInput && priceMaxInput.value.trim() !== '') {
+            params.set('price-max', priceMaxInput.value.trim());
+        } else {
+            params.delete('price-max');
+        }
+
+        // Ratings
+        const ratingCheckboxes = filterOverlay.querySelectorAll('input[name="rating"]:checked');
+        params.delete('rating');
+        ratingCheckboxes.forEach(checkbox => {
+            params.append('rating', checkbox.value);
         });
 
         if (searchBar && searchBar.value.trim() !== '') {

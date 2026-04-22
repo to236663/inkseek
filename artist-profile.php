@@ -467,7 +467,7 @@ if ($account_id && isset($mysqli) && $mysqli instanceof mysqli) {
 
                 <div id="artist-layout">
                     <div id="artist-picture">
-                        <img src="<?= e($artist['profile_image_path'] ?? 'images/profile photos/User/UP_4.jpg') ?>" alt="<?= e($artist['username']) ?>">
+                        <img src="<?= e($artist['profile_image_path'] ?? 'images/profilephotos/defaultProfile.jpg') ?>" alt="<?= e($artist['username']) ?>">
                     </div>
 
                     <div id="artist-details">
@@ -601,7 +601,7 @@ if ($account_id && isset($mysqli) && $mysqli instanceof mysqli) {
                                 <div class="review-item">
                                     <div class="review-header">
                                         <div class="review-user-info">
-                                            <img src="<?= e($review['profile_image_path'] ?? 'images/profile photos/User/UP_4.jpg') ?>" alt="<?= e($review['username']) ?>" class="review-profile-pic">
+                                            <img src="<?= e($review['profile_image_path'] ?? 'images/profilephotos/defaultProfile.jpg') ?>" alt="<?= e($review['username']) ?>" class="review-profile-pic">
                                             <span class="review-username"><?= e($review['username']) ?></span>
                                         </div>
                                         <span class="review-rating"><?= e($review['rating']) ?></span>

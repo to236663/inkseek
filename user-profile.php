@@ -29,7 +29,7 @@ function get_aspect_ratio_class($aspectRatio)
     return '';
 }
 
-$defaultProfileImage = 'images/profile photos/User/UP_4.jpg';
+$defaultProfileImage = 'images/profilephotos/defaultProfile.jpg';
 $defaultAboutText = 'This user has not added an about section yet.';
 
 $requestedAccountId = filter_input(
