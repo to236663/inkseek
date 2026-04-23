@@ -231,6 +231,7 @@ if (isset($mysqli) && $mysqli instanceof mysqli) {
                         <input type="hidden" name="recipient_id" value="<?= (int)$conversationWithId ?>">
                         <input type="text" id="message-input" name="message_body"
                             placeholder="Message <?= e($otherUser['username']) ?>..." autocomplete="off">
+                        <button type="submit" id="send-button">Send</button>
                     </form>
                     <?php if ($sendError !== ''): ?>
                         <p id="message-status" style="margin: 8px 6px 0; font-size: 13px; color: #b84a4a; display: block;"><?= e($sendError) ?></p>
@@ -253,6 +254,31 @@ if (isset($mysqli) && $mysqli instanceof mysqli) {
             const display = document.getElementById('messages-display');
             if (display) {
                 display.scrollTop = display.scrollHeight;
+            }
+        });
+
+        // Handle Enter key to submit message
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            const messageForm = document.getElementById('message-form');
+            const sendButton = document.getElementById('send-button');
+
+            if (messageInput && messageForm) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        messageForm.submit();
+                    }
+                });
+            }
+
+            // Clear input after page load (after successful send)
+            if (messageInput && window.location.search.includes('conversation=')) {
+                // Check if we just sent a message by looking for form submission
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('conversation')) {
+                    messageInput.focus();
+                }
             }
         });
     </script>

@@ -166,8 +166,15 @@ a.user-item.active {
     background-color: #F2F1ED;
 }
 
-#message-input {
+#message-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
     width: 100%;
+}
+
+#message-input {
+    flex: 1;
     padding: 14px 20px;
     font-size: 15px;
     font-family: Zain, sans-serif;
@@ -177,6 +184,43 @@ a.user-item.active {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     outline: none;
     box-sizing: border-box;
+    height: 48px;
+}
+
+#send-button {
+    padding: 14px 20px;
+    font-size: 15px;
+    font-family: Zain, sans-serif;
+    font-weight: 400;
+    background-color: #4FBA7F;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    min-width: 60px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#send-button:hover {
+    background-color: #3C9A66;
+}
+
+#send-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 #message-input::placeholder {
